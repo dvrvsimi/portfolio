@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="360" viewBox="0 0 1400 360">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#29506f"/>
+    </marker>
+    <style>
+      .box { fill:#eef5f8; stroke:#29506f; stroke-width:2.5; rx:16; }
+      .num { fill:#29506f; }
+      .ntext { font-family:Arial, sans-serif; font-size:20px; font-weight:700; fill:white; text-anchor:middle; dominant-baseline:middle; }
+      .title { font-family:Arial, sans-serif; font-size:21px; font-weight:700; fill:#17324a; text-anchor:middle; }
+      .body { font-family:Arial, sans-serif; font-size:16px; fill:#365467; text-anchor:middle; }
+      .arrow { stroke:#29506f; stroke-width:3; fill:none; marker-end:url(#arrow); }
+    </style>
+  </defs>
+  <rect width="1400" height="360" fill="white"/>
+  <text x="700" y="38" font-family="Arial, sans-serif" font-size="27" font-weight="700" fill="#17324a" text-anchor="middle">IncuBed Engineering Design Process</text>
+
+  <g transform="translate(30,85)">
+    <rect class="box" width="180" height="190"/>
+    <circle class="num" cx="90" cy="40" r="23"/><text class="ntext" x="90" y="40">1</text>
+    <text class="title" x="90" y="87">Needs</text><text class="title" x="90" y="113">assessment</text>
+    <text class="body" x="90" y="148">LUTH visit</text><text class="body" x="90" y="171">and stakeholder input</text>
+  </g>
+  <path class="arrow" d="M215 180 H245"/>
+
+  <g transform="translate(250,85)">
+    <rect class="box" width="180" height="190"/>
+    <circle class="num" cx="90" cy="40" r="23"/><text class="ntext" x="90" y="40">2</text>
+    <text class="title" x="90" y="87">Problem</text><text class="title" x="90" y="113">definition</text>
+    <text class="body" x="90" y="148">Cost, power and</text><text class="body" x="90" y="171">maintainability gaps</text>
+  </g>
+  <path class="arrow" d="M435 180 H465"/>
+
+  <g transform="translate(470,85)">
+    <rect class="box" width="180" height="190"/>
+    <circle class="num" cx="90" cy="40" r="23"/><text class="ntext" x="90" y="40">3</text>
+    <text class="title" x="90" y="87">Design inputs</text>
+    <text class="body" x="90" y="135">Thermal control</text><text class="body" x="90" y="158">Local availability</text><text class="body" x="90" y="181">Power resilience</text>
+  </g>
+  <path class="arrow" d="M655 180 H685"/>
+
+  <g transform="translate(690,85)">
+    <rect class="box" width="180" height="190"/>
+    <circle class="num" cx="90" cy="40" r="23"/><text class="ntext" x="90" y="40">4</text>
+    <text class="title" x="90" y="87">Concept</text><text class="title" x="90" y="113">screening</text>
+    <text class="body" x="90" y="148">Heat-source and</text><text class="body" x="90" y="171">architecture selection</text>
+  </g>
+  <path class="arrow" d="M875 180 H905"/>
+
+  <g transform="translate(910,85)">
+    <rect class="box" width="180" height="190"/>
+    <circle class="num" cx="90" cy="40" r="23"/><text class="ntext" x="90" y="40">5</text>
+    <text class="title" x="90" y="87">Embodiment</text><text class="title" x="90" y="113">design</text>
+    <text class="body" x="90" y="148">CAD, electronics</text><text class="body" x="90" y="171">and control logic</text>
+  </g>
+  <path class="arrow" d="M1095 180 H1125"/>
+
+  <g transform="translate(1130,85)">
+    <rect class="box" width="240" height="190"/>
+    <circle class="num" cx="120" cy="40" r="23"/><text class="ntext" x="120" y="40">6</text>
+    <text class="title" x="120" y="87">Prototype integration</text>
+    <text class="body" x="120" y="135">Fabrication, debugging</text><text class="body" x="120" y="158">and functional</text><text class="body" x="120" y="181">verification</text>
+  </g>
+</svg>

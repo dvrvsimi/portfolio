@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="900" viewBox="0 0 1500 900">
+  <defs>
+    <marker id="blueArrow" markerWidth="12" markerHeight="12" refX="10" refY="4" orient="auto">
+      <path d="M0,0 L0,8 L11,4 z" fill="#234f70"/>
+    </marker>
+    <marker id="orangeArrow" markerWidth="12" markerHeight="12" refX="10" refY="4" orient="auto">
+      <path d="M0,0 L0,8 L11,4 z" fill="#b65f28"/>
+    </marker>
+    <marker id="greenArrow" markerWidth="12" markerHeight="12" refX="10" refY="4" orient="auto">
+      <path d="M0,0 L0,8 L11,4 z" fill="#4d713b"/>
+    </marker>
+    <style>
+      .heading { font-family: Arial, sans-serif; font-size: 31px; font-weight: 700; fill: #17364d; text-anchor: middle; }
+      .lane { font-family: Arial, sans-serif; font-size: 20px; font-weight: 700; fill: #526875; letter-spacing: 1px; }
+      .box { fill: #f4f8fa; stroke: #234f70; stroke-width: 3; }
+      .thermal { fill: #fff4e9; stroke: #b65f28; stroke-width: 3; }
+      .power { fill: #f2f7ed; stroke: #4d713b; stroke-width: 3; }
+      .title { font-family: Arial, sans-serif; font-size: 23px; font-weight: 700; fill: #17364d; text-anchor: middle; }
+      .body { font-family: Arial, sans-serif; font-size: 18px; fill: #314e60; text-anchor: middle; }
+      .note { font-family: Arial, sans-serif; font-size: 16px; fill: #536b78; text-anchor: middle; }
+      .signal { fill: none; stroke: #234f70; stroke-width: 4; marker-end: url(#blueArrow); }
+      .heat { fill: none; stroke: #b65f28; stroke-width: 5; marker-end: url(#orangeArrow); }
+      .energy { fill: none; stroke: #4d713b; stroke-width: 4; stroke-dasharray: 10 7; marker-end: url(#greenArrow); }
+      .signalLabel { font-family: Arial, sans-serif; font-size: 17px; fill: #234f70; text-anchor: middle; }
+      .heatLabel { font-family: Arial, sans-serif; font-size: 17px; fill: #9d4d1c; text-anchor: middle; }
+      .powerLabel { font-family: Arial, sans-serif; font-size: 17px; fill: #4d713b; text-anchor: middle; }
+    </style>
+  </defs>
+
+  <rect width="1500" height="900" fill="#ffffff"/>
+  <text class="heading" x="750" y="48">IncuBed prototype architecture</text>
+
+  <text class="lane" x="45" y="94">THERMAL PATH</text>
+
+  <rect class="thermal" x="90" y="120" width="405" height="180" rx="14"/>
+  <text class="title" x="292" y="160">Lower heating chamber</text>
+  <text class="body" x="292" y="198">Nichrome element beneath damp cotton</text>
+  <text class="body" x="292" y="229">DS18B20 temperature measurement</text>
+  <text class="note" x="292" y="264">Electrical input converted to heat</text>
+
+  <rect class="thermal" x="595" y="105" width="550" height="210" rx="14"/>
+  <text class="title" x="870" y="145">Baby chamber</text>
+  <text class="body" x="870" y="178">DHT11 in the upper chamber</text>
+  <text class="body" x="870" y="205">Temperature and relative-humidity measurement</text>
+  <text class="body" x="870" y="238">Heat received from below is opposed by enclosure losses</text>
+  <text class="body" x="870" y="265">and the heat carried away by exchanged air.</text>
+  <text class="note" x="870" y="294">Equal heat input and loss produce a steady temperature.</text>
+
+  <rect class="thermal" x="1245" y="120" width="205" height="180" rx="14"/>
+  <text class="title" x="1348" y="160">Air exchange</text>
+  <text class="body" x="1348" y="202">Paired 12 V</text>
+  <text class="body" x="1348" y="230">brushless fans</text>
+  <text class="note" x="1348" y="265">Cross-chamber flow</text>
+
+  <path class="heat" d="M495 210 H580"/>
+  <text class="heatLabel" x="538" y="191">heat and moisture</text>
+  <path class="heat" d="M1145 210 H1230"/>
+  <text class="heatLabel" x="1188" y="191">warm air</text>
+
+  <text class="lane" x="45" y="386">MEASUREMENT AND CONTROL</text>
+
+  <rect class="box" x="90" y="415" width="350" height="175" rx="14"/>
+  <text class="title" x="265" y="455">Sensors</text>
+  <text class="body" x="265" y="496">DS18B20: lower chamber</text>
+  <text class="body" x="265" y="526">DHT11: baby chamber</text>
+  <text class="note" x="265" y="558">Temperature and humidity feedback</text>
+
+  <rect class="box" x="535" y="400" width="430" height="205" rx="14"/>
+  <text class="title" x="750" y="440">Arduino controller</text>
+  <text class="body" x="750" y="481">Threshold-based decision logic</text>
+  <text class="body" x="750" y="513">Heater off: lower chamber above 50°C</text>
+  <text class="body" x="750" y="543">Fans on: baby chamber above 38°C and RH below 60%</text>
+  <text class="note" x="750" y="578">Historical controller settings</text>
+
+  <rect class="box" x="1040" y="415" width="410" height="175" rx="14"/>
+  <text class="title" x="1255" y="455">Relay actuation</text>
+  <text class="body" x="1255" y="496">Heater relay switches the nichrome element</text>
+  <text class="body" x="1255" y="526">Fan relay switches the ventilation fans</text>
+  <text class="note" x="1255" y="558">Discrete on/off control</text>
+
+  <path class="signal" d="M440 502 H518"/>
+  <text class="signalLabel" x="479" y="483">measurements</text>
+  <path class="signal" d="M965 502 H1023"/>
+  <text class="signalLabel" x="994" y="483">commands</text>
+
+  <text class="lane" x="45" y="680">DEMONSTRATION POWER PATHS</text>
+
+  <rect class="power" x="90" y="710" width="525" height="130" rx="14"/>
+  <text class="title" x="352" y="750">Battery supply</text>
+  <text class="body" x="352" y="790">Powered the heating element and ventilation fans</text>
+  <text class="note" x="352" y="818">Demonstrated battery-supported thermal actuation</text>
+
+  <rect class="power" x="885" y="710" width="565" height="130" rx="14"/>
+  <text class="title" x="1168" y="750">Laptop USB supply</text>
+  <text class="body" x="1168" y="790">Powered the controller and display during the demonstration</text>
+  <text class="note" x="1168" y="818">A unified supply was reserved for the next iteration</text>
+
+  <path class="energy" d="M352 710 C352 650 1120 650 1220 595"/>
+  <text class="powerLabel" x="700" y="650">power to heater and fans</text>
+  <path class="energy" d="M1168 710 C1168 650 850 650 790 608"/>
+  <text class="powerLabel" x="1035" y="682">power to controller and display</text>
+</svg>

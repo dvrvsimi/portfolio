@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Development of an automated
+surface-water sampler for time-series trace-element monitoring.">
+  <title>AquaBot — Olorundara Akojede</title>
+  <link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="site-name" href="../../">Olorundara Akojede</a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="../../#work">Work</a>
+      <a href="../../#about">About</a>
+      <a href="mailto:daraakojede01@gmail.com">Reach Out!</a>
+    </nav>
+  </header>
+
+  <main>
+    <header class="project-header">
+      <p class="eyebrow">Engineering design case study</p>
+      <h1>AquaBot</h1>
+      <p class="project-meta">Automated scientific sampling · Rice OEDK
+· 2024</p>
+      <div class="project-actions">
+        <a href="../../downloads/aquabot-technical-case-study.pdf">Download technical case study (PDF)</a>
+        <a href="../../#work">Return to all work</a>
+      </div>
+    </header>
+
+    <article class="project-report">
+<h1
+id="aquabot-an-automated-surface-water-sampler-for-time-series-trace-element-monitoring">AquaBot:
+an automated surface-water sampler for time-series trace-element
+monitoring</h1>
+<p><strong>Team FlowMetrics:</strong> Olorundara Akojede, Deepak
+Narayan, Motunrayo Sanyaolu and Brandon Bravo<br />
+Summer Experience in Engineering Design, Oshman Engineering Design
+Kitchen, Rice University, 2024<br />
+<strong>Client:</strong> Dr Mark A. Torres — <a
+href="mailto:mark.torres@rice.edu"><span>mark.torres@rice.edu</span></a>,
+Department of Earth, Environmental and Planetary Sciences</p>
+<h2 id="abstract">Abstract</h2>
+<p>Environmental studies that depend on manually collected river samples
+are often limited in temporal resolution. AquaBot was developed during a
+seven-week engineering design internship to automate daily surface-water
+collection from the Lake Houston watershed. The instrument was designed
+to collect filtered samples for trace-element analysis and retain them
+until monthly retrieval. Water was drawn from the river by a peristaltic
+pump, filtered at 0.45 µm and transferred to an intermediate reservoir.
+A second pump metered the sample through a needle dispenser into an
+indexed vial. The storage plate accommodated a month-long sampling
+sequence, and a limit switch provided a repeatable reference for vial
+positioning. The internship produced an integrated electromechanical
+prototype that combined the complete fluid path, sample-storage
+mechanism and embedded controller in a portable case.</p>
+<p><strong>Keywords:</strong> automatic water sampling; surface water;
+trace elements; peristaltic pump; embedded control</p>
+<h2 id="1-design-objective">1. Design objective</h2>
+<p>River composition changes with rainfall, discharge and activity
+within the watershed. Detecting these changes requires samples to be
+collected often enough to resolve the relevant time scale. Manual
+collection places a practical limit on sampling frequency because
+researchers must travel to the site for each sample.</p>
+<p>Dr Mark Torres and his research group required an economical way to
+collect river water from the Lake Houston watershed at daily intervals.
+The samples were intended for later analysis of trace elements. AquaBot
+addressed this need through an instrument that could remain on the river
+bank, draw water through an intake line and store each daily sample
+separately for collection at the end of the deployment.</p>
+<p>The project need was formalised as follows:</p>
+<blockquote>
+<p>Develop an autonomous surface-water sampler that collects, filters
+and stores one river-water sample per day over a 30-day deployment.</p>
+</blockquote>
+<h2 id="2-requirements-definition">2. Requirements definition</h2>
+<p>Client interviews were used to define the collection workflow and
+anticipated field conditions. The principal requirements concerned the
+sampling interval, sample integrity and monthly servicing. These
+requirements were translated into the engineering responses shown in
+Table 1.</p>
+<p><strong>Table 1. Design requirements and engineering
+response</strong></p>
+<table>
+<thead>
+<tr>
+<th>Design requirement</th>
+<th>Engineering response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One unattended sample per day</td>
+<td>Automated sequence controlled by an Arduino-class
+microcontroller</td>
+</tr>
+<tr>
+<td>At least 30 separately stored samples</td>
+<td>Circular plate with 32 vial positions</td>
+</tr>
+<tr>
+<td>Up to 15 mL per sample</td>
+<td>Timed miniature peristaltic pump feeding the dispenser</td>
+</tr>
+<tr>
+<td>Filtered sample for trace-element analysis</td>
+<td>In-line 0.45 µm filter ahead of the reservoir</td>
+</tr>
+<tr>
+<td>Control of carryover through the shared fluid path</td>
+<td>Three native-water rinse cycles followed by drainage</td>
+</tr>
+<tr>
+<td>Reduced exposure during storage</td>
+<td>Individual vials with pierceable self-sealing closures</td>
+</tr>
+<tr>
+<td>Monthly retrieval and servicing</td>
+<td>Integrated white case to reduce evaporation with accessible sample
+plate and fluid-handling components</td>
+</tr>
+</tbody>
+</table>
+<p>The sampling protocol was developed around the client's analytical
+objective. EPA Method 200.8 specifies 0.45 µm filtration for the
+determination of dissolved elements, followed by nitric-acid
+preservation of the filtrate to a pH below 2 [1]. AquaBot therefore
+placed filtration before sample storage, with post-filtration
+preservation included in the workflow.</p>
+<h2 id="3-concept-development">3. Concept development</h2>
+<p>The system was divided into fluid-handling and electromechanical
+functions. Early concepts considered placing the complete sampler in the
+water or locating the main assembly on the river bank. The bank-mounted
+arrangement was selected because or the high currents at lake Houston
+during certain periods of the year and so that the sample store could
+remain accessible while only the intake tube entered the river.</p>
+<p>Mechanical, pressure-driven and suction-based collection methods were
+studied. Pump suction provided direct electronic control and allowed the
+fluid path to be implemented with flexible tubing. Peristaltic pumps
+were selected because water remains inside the tube and reverse
+operation can support purging that solves the problem of daily sample
+uniqueness. Their use in surface-water autosamplers is well established;
+current US Geological Survey guidance describes battery operation and
+reversible rinsing as useful features of this pump class [2].</p>
+<p>The sample-storage concepts progressed from a geared vial carousel to
+a directly indexed circular plate. A common dispensing station was
+retained while the vials moved beneath it. This reduced the number of
+pumps and fluid connections required for separate daily samples.</p>
+<p><img src="sources/medium-images/medium-image-05.png"
+alt="Initial geared-carousel concept" /></p>
+<p><strong>Figure 1.</strong> Early geared-carousel concept developed
+during system architecture exploration.</p>
+<p><img src="sources/medium-images/medium-image-07.png"
+alt="CAD representation of the selected vial plate and dispenser" /></p>
+<p><strong>Figure 2.</strong> CAD representation of the selected
+circular vial plate and vertical dispensing station.</p>
+<h2 id="4-prototype-design">4. Prototype design</h2>
+<h3 id="41-fluid-path">4.1 Fluid path</h3>
+<p>The fluid path contained two pumping stages. The main peristaltic
+pump drew water through the intake and delivered it to the 0.45 µm
+filter. Filtrate entered a small reservoir that decoupled river intake
+from sample dispensing. A miniature peristaltic pump then transferred
+the required volume from the reservoir to the needle.</p>
+<p>The reservoir included a drain valve for rinse water. Separating
+intake from dispensing allowed the higher-capacity pump to fill and
+flush the upstream path while the smaller pump handled sample
+delivery.</p>
+<p><img src="sources/medium-images/medium-image-10.png"
+alt="Reservoir, filter and main-pump assembly" /></p>
+<p><strong>Figure 3.</strong> Prototype fluid-conditioning module
+containing the main pump, filter, reservoir and drain.</p>
+<h3 id="42-sample-storage-and-dispensing">4.2 Sample storage and
+dispensing</h3>
+<p>The sample dispenser consisted of a needle attached to a vertically
+actuated carriage. During each collection cycle, the carriage lowered
+the needle through the vial closure. The miniature pump then transferred
+the filtered sample before the needle was withdrawn.</p>
+<p>Individual self-sealing vials were used to isolate the daily samples.
+The same general principle has been applied in published autosamplers,
+where water is injected through a septum to limit evaporation and
+exchange with the environment during storage [3]. The narrow vial tubing
+also reduced the exposed water surface.</p>
+<p><img src="sources/medium-images/medium-image-11.png"
+alt="Dispensing station, miniature pump and vial" /></p>
+<p><strong>Figure 4.</strong> Dispensing station showing the rotating
+plate, needle carriage, miniature pump and representative vial.</p>
+<h3 id="43-rotary-indexing">4.3 Rotary indexing</h3>
+<p>The circular plate provided 32 positions around its perimeter. Daily
+samples occupied the storage positions, while one position was assigned
+to drainage during dispenser flushing. Plate rotation was produced by a
+stepper motor.</p>
+<p>A limit switch established the home position before the plate
+advanced. This reference prevented positioning offsets from carrying
+into later vial locations. Once homed, the controller could relate motor
+steps to the required sample position.</p>
+<h3 id="44-embedded-control">4.4 Embedded control</h3>
+<p>An Arduino-class microcontroller coordinated the pumps, drain valve,
+vertical actuator and plate motor. The collection procedure was encoded
+as an ordered sequence of fluid transfer and movement. Each vial was
+addressed once during the monthly cycle.</p>
+<p><img src="analysis/figures/system_architecture.svg"
+alt="AquaBot functional architecture" /></p>
+<p><strong>Figure 5.</strong> Functional architecture of the integrated
+AquaBot prototype.</p>
+<h2 id="5-operating-sequence">5. Operating sequence</h2>
+<p>Each daily cycle began by drawing current river water through the
+intake. Three rinse cycles were used to replace water remaining in the
+shared fluid path. The reservoir drain and dedicated waste position
+allowed this rinse water to leave the system without entering a storage
+vial.</p>
+<p>After flushing, filtered water was retained in the reservoir. The
+vial plate was referenced and moved to the required daily position. The
+needle carriage descended, the miniature pump dispensed the sample, and
+the needle was withdrawn before the plate was prepared for the next
+collection event.</p>
+<p>The resulting sequence was:</p>
+<blockquote>
+<p>intake → filtration → reservoir rinse → vial positioning → sample
+dispensing → drainage</p>
+</blockquote>
+<p>This architecture converted the laboratory sampling procedure into a
+repeatable set of fluidic and mechanical operations.</p>
+<h2 id="6-prototype-realisation">6. Prototype realisation</h2>
+<p>The design was developed through CAD, physical prototyping and
+subsystem integration within the seven-week internship. Early mechanism
+layouts were revised as the reservoir, actuator and vial plate were
+brought into a common enclosure. The completed assembly contained the
+upstream fluid module, dispensing station and controller
+electronics.</p>
+<p><img src="sources/medium-images/medium-image-13.jpg"
+alt="Integrated AquaBot prototype" /></p>
+<p><strong>Figure 6.</strong> Integrated AquaBot prototype inside the
+portable enclosure.</p>
+<p>The prototype demonstrated the complete instrument architecture in
+one assembly. Water acquisition, filtration, temporary holding and
+sample allocation were integrated with a deliberate waste path and
+positional referencing for repeated operation.</p>
+<h2 id="7-engineering-contribution">7. Engineering contribution</h2>
+<p>The FlowMetrics project required the client's geochemical workflow to
+be translated into hardware requirements. The project also provided
+experience in client-led requirements development, mechanism evaluation
+and electromechanical integration. The final prototype joined fluid
+transport with embedded control inside the same system boundary, making
+the work directly relevant to automated instrumentation in other
+measurement domains.</p>
+<h2 id="8-development-pathway">8. Development pathway</h2>
+<p>The next prototype would be prepared for field use through
+instrumented qualification. Dispensed volume would be measured across
+the expected intake head while a tracer study would determine how many
+rinse cycles are required to control carryover. Stored samples would be
+monitored for evaporative loss, and repeated indexing cycles would
+quantify needle-to-vial alignment. A month-long endurance run would then
+exercise the full timing sequence and power system before deployment
+beside manually collected reference samples.</p>
+<p>These experiments follow the same progression used for established
+autosamplers: the mechanism is first integrated, after which sampling
+repeatability and agreement with the reference collection method are
+measured [2].</p>
+<h2 id="9-conclusion">9. Conclusion</h2>
+<p>AquaBot translated a need for higher-frequency river monitoring into
+an integrated automated sampler. The design combined a filtered intake
+and individually sealed sample storage with an indexed dispensing
+mechanism. A complete prototype was produced during the internship,
+demonstrating how a geochemical collection protocol could be implemented
+through embedded control and physical system design.</p>
+<h2 id="references">References</h2>
+<ol type="1">
+<li>US Environmental Protection Agency. “<a
+href="https://www.epa.gov/sites/production/files/2015-06/documents/epa-200.8.pdf">Method
+200.8: Determination of trace elements in waters and wastes by
+inductively coupled plasma-mass spectrometry</a>,” section 8.</li>
+<li>Wilson, T. P., Miller, C. V. and Lechner, E. A. (2024). “<a
+href="https://doi.org/10.3133/tm1D12">Guidelines for the use of
+automatic samplers in collecting surface-water quality and sediment
+data</a>.” <em>US Geological Survey Techniques and Methods</em>,
+1-D12.</li>
+<li>Hartmann, A., Luetscher, M., Wachter, R., Holz, P., Eiche, E. and
+Neumann, T. (2018). “<a
+href="https://doi.org/10.5194/hess-22-4281-2018">GUARD—an automated
+fluid sampler preventing sample alteration by contamination, evaporation
+and gas exchange</a>.” <em>Hydrology and Earth System Sciences</em>, 22,
+4281–4293.</li>
+<li>Mucciarone, D. A., DeJong, H. B., Dunbar, R. B., Takeshita, Y.,
+Albright, R. and Mertz, K. (2021). “<a
+href="https://doi.org/10.1016/j.ohx.2021.e00197">Autonomous submersible
+multiport water sampler</a>.” <em>HardwareX</em>, 9, e00197.</li>
+<li>Akojede, O. (2024). “<a
+href="https://medium.com/@dvrvsimi/2024-seed-internship-reflection-academic-learning-experience-ad5d7386ab10">2024
+SEED Internship Reflection: Academic Learning Experience</a>.”</li>
+<li>Team FlowMetrics (2024). “<a
+href="https://docs.google.com/spreadsheets/d/18YBue1OxordpwFpfs_bJSK0JOGsgRWWjSaJx9xBrJ6E/edit?usp=sharing">Engineering
+Design Process Worksheet</a>.”</li>
+</ol>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <span>Olorundara Akojede · Engineering research portfolio</span>
+  </footer>
+</body>
+</html>

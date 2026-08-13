@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Development of a neonatal incubator
+prototype for rural primary healthcare in Nigeria.">
+  <title>IncuBed — Olorundara Akojede</title>
+  <link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="site-name" href="../../">Olorundara Akojede</a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="../../#work">Work</a>
+      <a href="../../#about">About</a>
+      <a href="mailto:daraakojede01@gmail.com">Reach Out!</a>
+    </nav>
+  </header>
+
+  <main>
+    <header class="project-header">
+      <p class="eyebrow">Engineering design case study</p>
+      <h1>IncuBed</h1>
+      <p class="project-meta">Neonatal thermal care · UNILAG Design
+Studio · 2022–2024</p>
+      <div class="project-actions">
+        <a href="../../downloads/incubed-technical-case-study.pdf">Download technical case study (PDF)</a>
+        <a href="../../#work">Return to all work</a>
+      </div>
+    </header>
+
+    <article class="project-report">
+<h1
+id="incubed-development-of-a-neonatal-incubator-prototype-for-rural-primary-healthcare">IncuBed:
+development of a neonatal incubator prototype for rural primary
+healthcare</h1>
+<p><strong>Akojede Olorundara (Lead Researcher), Ajayi Ifeoluwa and
+Animasahun Ridwanulahi</strong><br />
+UNILAG Design Studio, University of Lagos, Nigeria</p>
+<h2 id="abstract">Abstract</h2>
+<p>Reliable thermal care for preterm newborns depends on equipment that
+can be operated and maintained where care is delivered. In many Nigerian
+primary healthcare settings, unreliable electricity and limited access
+to replacement parts make this difficult. IncuBed was developed during
+the 2022 Rice360–UNILAG internship as an early hardware response to that
+problem. A needs-assessment visit to Lagos University Teaching Hospital
+informed the design requirements. The resulting device is a
+cost-effective steam-centered neonatal incubator. Benchtop checks
+demonstrated closed-loop operation in one integrated prototype. The work
+established a functional basis for a subsequent design with improved
+thermal control and an integrated power system.</p>
+<p><strong>Keywords:</strong> neonatal incubator; thermal regulation;
+embedded control; low-resource medical device</p>
+<h2 id="1-background-and-design-objective">1. Background and design
+objective</h2>
+<p>The World Health Organization classifies a newborn body temperature
+below 36.5°C as hypothermia [1]. Preterm and low-birth-weight infants
+are especially vulnerable because they lose heat rapidly and have
+limited capacity for thermoregulation due to their low body fat to
+surface area ratio [1–3]. Current WHO guidance places kangaroo mother
+care at the centre of routine care for these infants, while incubators
+and warmers remain part of the support required for some unstable
+newborns [3].</p>
+<p>The usefulness of an incubator depends on the system around it. A
+review of health facilities in sub-Saharan Africa found major gaps in
+electricity access and supply reliability [4]. Equipment donation also
+fails when the receiving facility cannot obtain parts, training or
+maintenance support; WHO guidance therefore recommends that donated
+devices be selected with the same care as purchased equipment [5].</p>
+<p>IncuBed addressed a narrower engineering question: could the
+essential functions of an infant incubator be integrated using
+components that were locally sourced by a Nigerian university design
+team? The intended setting was rural primary healthcare. The prototype
+was expected to provide a warm chamber, measure its environment and
+continue thermal actuation during a power interruption. These goals
+defined the work as an early design study with compliance against the
+infant-incubator safety standard reserved for later development [6].</p>
+<p><img src="analysis/figures/engineering_design_process.svg"
+alt="Engineering design process applied during IncuBed development" /></p>
+<p><strong>Figure 1.</strong> Engineering design process used for
+IncuBed, from needs assessment to an integrated prototype.</p>
+<h2 id="2-design-development">2. Design development</h2>
+<h3 id="21-needs-assessment">2.1 Needs assessment</h3>
+<p>Needs finding included a visit to the neonatal unit at Lagos
+University Teaching Hospital (LUTH) where the team met healthcare
+practitioners and clinic technicians. Hospital personnel identified a
+group of donated incubators as faulty or abandoned. The observation made
+serviceability a central design input: supplying equipment does not
+improve care when the equipment cannot be kept in use.</p>
+<p><img
+src="analysis/docx/2024_Johns_Hopkins_Healthcare_Design_Submission_-_IncuBed_%28Images_and_References%29/media/media/image7.jpg"
+alt="Faulty or abandoned incubators observed during the LUTH needs assessment" /></p>
+<p><strong>Figure 2.</strong> Incubators documented during the LUTH
+needs-assessment visit. Hospital personnel confirmed the condition of
+the units. The photograph is reproduced with permission.</p>
+<p>The clinical need was translated into the preliminary requirements
+shown in Table 1. “Locally available” describes procurement within
+Nigeria and does not mean that every part was manufactured in the
+country.</p>
+<p><strong>Table 1. Preliminary design requirements and prototype
+outcome</strong></p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Prototype response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Warm baby chamber</td>
+<td>Heat was generated in a lower chamber and transferred through
+convection to the baby chamber</td>
+</tr>
+<tr>
+<td>Environmental measurement</td>
+<td>Chamber temperature and relative humidity were read with a DHT11;
+the lower chamber was monitored by a DS18B20</td>
+</tr>
+<tr>
+<td>Controlled air exchange</td>
+<td>Two 12 V brushless fans were mounted on opposing walls</td>
+</tr>
+<tr>
+<td>Operation during grid interruption</td>
+<td>A battery powered the heater and fans during demonstration</td>
+</tr>
+<tr>
+<td>Field serviceability</td>
+<td>Acrylic and most electronic parts were obtainable in Nigeria</td>
+</tr>
+<tr>
+<td>Lower acquisition cost</td>
+<td>The build was retrospectively estimated at about 500 USD</td>
+</tr>
+<tr>
+<td>Filtered inlet air</td>
+<td>HEPA filtration was specified for later development because the
+filter was not readily available at the time</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-concept-selection">2.2 Concept selection</h3>
+<p>The earliest concept placed beeswax beneath the infant compartment as
+a passive thermal store. That choice had a credible material basis.
+Calorimetry studies describe beeswax as a phase-change material that
+absorbs and releases latent heat during melting and solidification
+[7,9]. A separate incubator experiment reported that beeswax storage
+kept its chamber above 32°C for more than eight hours under the
+conditions tested [8]. These findings support the original heat-storage
+rationale but failed further screening because the heating system could
+not be regulated.</p>
+<p><img src="analysis/pptx/IncuBed_pitch_%281%29/media/image16.jpg"
+alt="Initial beeswax concept sketch" /></p>
+<p><strong>Figure 3.</strong> Early beeswax concept from a presentation
+slide.</p>
+<p>The design later moved to an actively switched heater so that heat
+input could respond to measured chamber conditions. Other concepts
+included heated beddings and direct resistive heating. A nichrome
+element placed beneath damp cotton was chosen for the internship build
+because its components were obtainable and the arrangement could be
+fabricated within the available workshop time. The decision marked a
+transition from passive heat storage to active thermal control.</p>
+<p><img
+src="analysis/docx/Title__IncuBed-_Designing_a_Cost-Effective_Incubator_for_Primary_Healthcare_Centers_in_Sub-Saharan_Africa/media/media/image1.png"
+alt="CAD representation of the selected incubator architecture" /></p>
+<p><strong>Figure 4.</strong> CAD representation of the selected
+architecture. The perforated layer separates the baby chamber from the
+lower thermal compartment.</p>
+<h2 id="3-prototype-design-and-implementation">3. Prototype design and
+implementation</h2>
+<h3 id="31-system-architecture">3.1 System architecture</h3>
+<p>The prototype was divided into a thermal path, a control loop and two
+demonstration power paths. The DS18B20 monitored the lower chamber while
+a DHT11 measured temperature and relative humidity in the baby chamber.
+Both devices provided digital measurements to an Arduino-class
+microcontroller [10,11]. Relay outputs switched the nichrome heater and
+ventilation fans.</p>
+<p><img src="analysis/figures/system_architecture.svg"
+alt="Functional and power architecture" /></p>
+<p><strong>Figure 5.</strong> Functional architecture of the integrated
+prototype.</p>
+<h3 id="32-heat-transfer-and-ventilation">3.2 Heat transfer and
+ventilation</h3>
+<p>The lower chamber contained approximately 5 m of nichrome 80/20 wire.
+Current through the wire produced resistive heat. Damp cotton held water
+close to the element, and the resulting warm humid air passed through
+openings beneath the baby chamber. Temperature in the upper chamber
+therefore depended on the heat received from below and the heat lost
+through the enclosure or carried away by exchanged air.</p>
+<p><img src="analysis/pptx/IncuBed_Deck/media/image12.png"
+alt="Convection and air exchange through the IncuBed chambers" /></p>
+<p><strong>Figure 6.</strong> Project diagram showing heat transfer from
+the lower chamber and the intended convection path through the baby
+chamber.</p>
+<p>Two 80 mm brushless fans were mounted on opposite walls in the same
+flow direction. This arrangement produced cross-chamber air exchange
+with simple hardware. The prototype did not contain the proposed HEPA
+and activated-carbon filter stage.</p>
+<h3 id="33-embedded-control">3.3 Embedded control</h3>
+<p>The controller used discrete threshold logic. In the final design
+record, the heater was switched off when the lower-chamber reading
+exceeded 50°C. The fans were activated when the baby-chamber reading
+exceeded 38°C and relative humidity was below 60%. These values document
+how the prototype was operated; later development would determine
+control limits through instrumented thermal testing and apply an
+independent over-temperature cut-off through fuzz logic.</p>
+<p>An earlier source-code version remains available in the public
+project repository. It reads a DS18B20 and switches heater and fan
+relays at a common 35°C threshold.</p>
+<h3 id="34-power-arrangement">3.4 Power arrangement</h3>
+<p>The demonstration used separate supplies. A battery drove the heating
+element and both fans. The laptop’s USB connection powered the
+controller and LCD. This allowed battery-supported heating and
+ventilation to be shown with the hardware available at the time. A later
+build would place the full device on a managed power bus with
+battery-state monitoring.</p>
+<h3 id="35-fabrication-and-team-contribution">3.5 Fabrication and team
+contribution</h3>
+<p>The only physical prototype was produced during the internship as a
+collective Team Stark project. Its enclosure was assembled from clear
+and opaque acrylic. Material dimensions and workshop tooling forced the
+chamber to be reduced from the first CAD layout. Bonded joints were also
+revised after early failures.</p>
+<p>Akojede Olorundara led the technical implementation, including CAD,
+acrylic fabrication, circuit wiring and embedded programming. Ajayi
+Ifeoluwa and Animasahun Ridwanulahi contributed to needs finding and the
+communication work used to present the project. The team received
+technical guidance through the Rice360–UNILAG programme and from Dr
+Olawale Ajibola.</p>
+<p><img src="analysis/pptx/IncuBed_pitch_%281%29/media/image3.jpg"
+alt="Integrated low-fidelity IncuBed prototype" /></p>
+<p><strong>Figure 7.</strong> Integrated prototype with the acrylic
+chamber, ventilation fans, lower thermal compartment and external
+demonstration hardware.</p>
+<h2 id="4-benchtop-evaluation">4. Benchtop evaluation</h2>
+<p>Evaluation concentrated on whether the assembled subsystems worked
+together. The nichrome element generated heat after several fabrication
+iterations. Both temperature-sensing paths produced readings, including
+the DHT11 installed in the baby chamber. The controller then changed the
+relay states and actuated the heater or fans when the programmed
+conditions were reached. The internship produced one working
+electromechanical assembly with a complete measurement-to-actuation
+path.</p>
+<p>Measurements like warm-up time and temperature uniformity belong in
+the next verification plan. Patient testing was outside this prototype
+stage.</p>
+<h2 id="5-engineering-assessment">5. Engineering assessment</h2>
+<h3 id="51-what-the-prototype-established">5.1 What the prototype
+established</h3>
+<p>IncuBed reduced an observed equipment problem to a buildable system
+architecture. The prototype also showed that the main structural and
+electronic parts could be procured locally, with HEPA filtration
+remaining the important exception.</p>
+<p>The heat source was deliberately simple, but its placement inside a
+wet medium creates a design issue that the next embodiment must resolve.
+A sealed humidification reservoir and an isolated heater assembly would
+separate the fluid path from energized conductors. Thermal protection
+also needs to function if the software, relay or primary sensor fails.
+IEC 60601-2-19 provides the relevant framework for basic safety and
+essential performance of an infant incubator [6].</p>
+<p>The paired fans proved actuation and visible airflow. Their final
+specification requires chamber mapping because local airflow can produce
+temperature gradients or unwanted cooling. Multi-point measurements
+should therefore be made with a representative thermal load over the
+expected ambient range. Humidity, sound level and power consumption can
+be recorded during the same tests. Extended operation would then reveal
+drift and power-interruption behaviour.</p>
+<h3 id="52-cost-and-maintainability">5.2 Cost and maintainability</h3>
+<p>The prototype cost is roughly one-third of a fairly used incubator
+that was priced near USD 1,500 at the time, giving an estimated build
+cost of about USD 500. Receipts and the applicable exchange rate were
+not retained, so this is a retrospective estimate. It describes the
+laboratory build only and excludes the work required to manufacture a
+regulated device.</p>
+<p>A mature design would replace hobby-grade sensing where necessary,
+document interchangeable parts and provide service procedures. The
+design goal is sustained operation at the healthcare facility, the same
+concern raised by the LUTH needs assessment and WHO donation guidance
+[5].</p>
+<h2 id="6-project-outputs">6. Project outputs</h2>
+<p>The prototype was presented at the 13th Annual Rice360 Global Health
+Technologies Design Competition in 2023.</p>
+<p><img src="analysis/pptx/IncuBed_pitch_%281%29/media/image8.png"
+alt="Rice360 Global Health Technologies Design Competition certificate" /></p>
+<p><strong>Figure 8.</strong> Certificate recording Team Stark’s
+participation in the 2023 Rice360 competition.</p>
+<p>TinyTend Limited was incorporated on 20 November 2023 as a possible
+vehicle for continued development of IncuBed.</p>
+<p><img src="analysis/pptx/IncuBed_pitch_%281%29/media/image15.png"
+alt="TinyTend Limited certificate of incorporation" /></p>
+<p><strong>Figure 9.</strong> TinyTend Limited certificate of
+incorporation, registration number 7230687.</p>
+<p>Nigerian patent application NG/P/2024/89, titled <em>A Cost-Effective
+Steam Neonatal Incubator for Low-Resource Regions</em>, was filed in
+February 2024. The Patent Registry acknowledged the application in March
+2024. No patent grant was issued.</p>
+<p><img src="analysis/pptx/IncuBed_pitch_%281%29/media/image17.jpg"
+alt="Acknowledgement of Nigerian patent application NG/P/2024/89" /></p>
+<p><strong>Figure 10.</strong> Patent Registry acknowledgement for
+application NG/P/2024/89.</p>
+<p>Development stopped after the low-fidelity build because the project
+lacked the personnel and funding required for a market-ready iteration.
+The remaining engineering work begins with a sealed thermal module and
+unified power electronics, followed by formal risk management and
+performance testing.</p>
+<h2 id="7-conclusion">7. Conclusion</h2>
+<p>IncuBed is an early neonatal-incubator prototype developed from a
+need observed in the Nigerian healthcare system. The project moved
+through the engineering design process and ended with a working
+integrated assembly. The battery-backed actuation path addressed the
+immediate problem of unreliable electricity.</p>
+<h2 id="references">References</h2>
+<ol type="1">
+<li>World Health Organization. <em>Thermal Protection of the Newborn: A
+Practical Guide</em>. WHO/RHT/MSM/97.2. Geneva: WHO; 1997. <a
+href="https://www.who.int/publications/i/item/WHO_RHT_MSM_97.2">https://www.who.int/publications/i/item/WHO_RHT_MSM_97.2</a></li>
+<li>Lunze K, Bloom DE, Jamison DT, Hamer DH. The global burden of
+neonatal hypothermia: systematic review of a major challenge for newborn
+survival. <em>BMC Medicine</em>. 2013;11:24. <a
+href="https://doi.org/10.1186/1741-7015-11-24">https://doi.org/10.1186/1741-7015-11-24</a></li>
+<li>World Health Organization. <em>WHO Recommendations for Care of the
+Preterm or Low-Birth-Weight Infant</em>. Geneva: WHO; 2022. <a
+href="https://www.who.int/publications/i/item/9789240058262">https://www.who.int/publications/i/item/9789240058262</a></li>
+<li>Adair-Rohani H, et al. Limited electricity access in health
+facilities of sub-Saharan Africa: a systematic review of data on
+electricity access, sources, and reliability. <em>Global Health: Science
+and Practice</em>. 2013;1(2):249–261. <a
+href="https://doi.org/10.9745/GHSP-D-13-00037">https://doi.org/10.9745/GHSP-D-13-00037</a></li>
+<li>World Health Organization. <em>Medical Device Donations:
+Considerations for Solicitation and Provision</em>. 2nd ed. Geneva: WHO;
+2025. <a
+href="https://iris.who.int/bitstream/handle/10665/378274/9789240093621-eng.pdf">https://iris.who.int/bitstream/handle/10665/378274/9789240093621-eng.pdf</a></li>
+<li>International Electrotechnical Commission. <em>IEC
+60601-2-19:2020+AMD1:2023: Medical Electrical Equipment—Part 2-19:
+Particular Requirements for the Basic Safety and Essential Performance
+of Infant Incubators</em>. Geneva: IEC. <a
+href="https://webstore.iec.ch/en/publication/64023">https://webstore.iec.ch/en/publication/64023</a></li>
+<li>Kabir MS, Yola IA. Beeswax as a low temperature phase change
+material for thermal storage. <em>FUDMA Journal of Sciences</em>.
+2020;4(1):764–769. <a
+href="https://fjs.fudutsinma.edu.ng/index.php/fjs/article/view/118">https://fjs.fudutsinma.edu.ng/index.php/fjs/article/view/118</a></li>
+<li>Sinaringati S, Putra N, Amin M, Afriyanti F. The utilization of
+paraffin and beeswax as heat energy storage in infant incubator.
+<em>ARPN Journal of Engineering and Applied Sciences</em>.
+2016;11(2):800–804. <a
+href="https://www.arpnjournals.org/jeas/research_papers/rp_2016/jeas_0116_3404.pdf">https://www.arpnjournals.org/jeas/research_papers/rp_2016/jeas_0116_3404.pdf</a></li>
+<li>Dinker A, Agarwal M, Agarwal GD. Experimental study on thermal
+performance of beeswax as thermal storage material. <em>Materials Today:
+Proceedings</em>. 2017;4(9):10529–10533. <a
+href="https://doi.org/10.1016/j.matpr.2017.06.414">https://doi.org/10.1016/j.matpr.2017.06.414</a></li>
+<li>Analog Devices. <em>DS18B20 Programmable Resolution 1-Wire Digital
+Thermometer: Data Sheet</em>. Rev. 6; 2019. <a
+href="https://www.analog.com/media/en/technical-documentation/data-sheets/DS18B20.pdf">https://www.analog.com/media/en/technical-documentation/data-sheets/DS18B20.pdf</a></li>
+<li>Aosong Electronics. <em>DHT11 Temperature and Humidity Sensor</em>.
+Manufacturer product information. <a
+href="https://www.aosong.com/en/Products/info.aspx?itemid=2257">https://www.aosong.com/en/Products/info.aspx?itemid=2257</a></li>
+</ol>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <span>Olorundara Akojede · Engineering research portfolio</span>
+  </footer>
+</body>
+</html>
