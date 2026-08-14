@@ -64,6 +64,14 @@ cp "$workspace_dir/hardware/runs/canonical/artifacts/figures/matched_std_dw_pair
   "$site_dir/projects/edge-inference-energy/analysis/figures/"
 cp "$workspace_dir/hardware/runs/canonical/artifacts/figures/static_bytes_vs_macs_runtime_shape.png" \
   "$site_dir/projects/edge-inference-energy/analysis/figures/"
+cp "$workspace_dir/hardware/data/figures/raspberry_pi_ina226_power_path.png" \
+  "$site_dir/projects/edge-inference-energy/analysis/figures/"
+cp "$workspace_dir/hardware/Screenshot_20260804_090050_WhatsApp.jpg" \
+  "$site_dir/projects/edge-inference-energy/analysis/figures/ina226_inline_wiring_labelled.jpg"
+cp "$workspace_dir/hardware/data/figures/ina226_zero_offset_bench.jpg" \
+  "$site_dir/projects/edge-inference-energy/analysis/figures/"
+cp "$workspace_dir/hardware/data/figures/ina226_zero_offset_serial.png" \
+  "$site_dir/projects/edge-inference-energy/analysis/figures/"
 
 pandoc "$workspace_dir/rice bme/incubed/INCUBED_TECHNICAL_CASE_STUDY.md" \
   --from=gfm \
@@ -86,18 +94,6 @@ pandoc "$workspace_dir/grad/aquabot/AQUABOT_TECHNICAL_CASE_STUDY.md" \
   --metadata description="Development of an automated surface-water sampler for time-series trace-element monitoring." \
   --metadata pdfname="aquabot-technical-case-study.pdf" \
   --output="$site_dir/projects/aquabot/index.html"
-
-pandoc "$workspace_dir/hardware/EDGE_INFERENCE_ENERGY_CASE_STUDY.md" \
-  --from=gfm \
-  --to=html5 \
-  --template="$site_dir/templates/project.html" \
-  --metadata pagetitle="Edge-inference energy benchmark" \
-  --metadata projecttype="Research case study · Pre-hardware phase" \
-  --metadata projectmeta="TinyML and embedded inference · Independent research · 2026–present" \
-  --metadata description="Design and pre-hardware results for a controlled study of operation-count metrics and edge-inference energy." \
-  --metadata bodyclass="edge-energy-case-study" \
-  --metadata pdfname="edge-inference-energy-case-study.pdf" \
-  --output="$site_dir/projects/edge-inference-energy/index.html"
 
 weasyprint \
   "$site_dir/projects/incubed/index.html" \
