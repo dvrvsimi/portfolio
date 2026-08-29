@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Controlled study of operation-count
-metrics and edge-inference energy, progressing from static analysis to
-hardware measurement.">
+  <meta name="description" content="Measured Raspberry Pi evidence
+showing where operation-count rankings diverge from board-level
+edge-inference energy.">
   <title>Edge-inference energy benchmark — Olorundara Akojede</title>
   <link rel="stylesheet" href="../../styles.css">
   <link rel="icon" type="image/jpeg" href="../../pfp.jpeg">
@@ -22,8 +22,7 @@ hardware measurement.">
 
   <main>
     <header class="project-header">
-      <p class="eyebrow">Research case study · Measurement
-preparation</p>
+      <p class="eyebrow">Research case study · Raspberry Pi results</p>
       <h1>Edge-inference energy benchmark</h1>
       <p class="project-meta">TinyML and embedded inference ·
 Independent research · 2026–present</p>
@@ -41,51 +40,18 @@ operation-count proxies for edge-inference energy</h1>
 ¹ Independent Researcher, Lagos, Nigeria<br />
 ² Energhx Research Group, Department of Mechanical Engineering,
 University of Lagos, Nigeria</p>
-<p><strong>Project phase:</strong> Model-corpus preparation and static
-analysis are complete. Raspberry Pi measurement-system characterization
-is underway ahead of formal inference-energy trials.</p>
+<p><strong>Project phase:</strong> Model-corpus preparation, static
+analysis and the formal Raspberry Pi experiment are complete. ESP32-S3
+deployment and measurement remain in progress.</p>
 <h2 id="abstract">Abstract</h2>
-<p>Operation counts are widely used to estimate the efficiency of neural
-networks before deployment. They describe arithmetic workload, but the
-energy consumed during inference also depends on the movement of model
-parameters and intermediate tensors through a hardware system. This
-distinction becomes important at the edge, where the same model may
-execute on devices with different memory hierarchies and runtimes.</p>
-<p>This case study documents the completed model-development and
-pre-measurement work for a controlled experiment comparing
-operation-based metrics with board-level inference energy. A corpus of
-43 neural networks was trained across four edge-inference tasks. Each
-selected checkpoint was converted into FP32 and full-integer INT8
-TensorFlow Lite artifacts, producing 86 artifacts for
-development-runtime validation. Static graph analysis was used to
-calculate arithmetic and memory-facing descriptors before
-inference-energy measurements.</p>
-<p>The pre-measurement results establish a controlled test set in which
-models with nearly equal multiply-accumulate counts have markedly
-different estimated activation demand. In the closest CIFAR-10 and
-keyword-spotting pairs, MAC counts differ by 1.074% and 0.203%, while
-activation-output totals for the corresponding depthwise models are
-3.889× and 3.975× those of the standard-convolution models,
-respectively. Task quality differs by only 1.130 and 1.175 percentage
-points, respectively, leaving a direct empirical question: whether these
-structural differences translate into latency or board-input energy. If
-MAC-based rankings fail under these conditions, predeployment model
-selection could favour an architecture with similar task quality but
-higher latency or energy demand on the target hardware. All 86 artifacts
-passed development-runtime compatibility validation, and the fixed
-measurement banks completed 10,320 validation invocations. These results
-provide the experimental basis for the hardware phase, in which latency
-and board-input energy will be measured on a Raspberry Pi and an
-ESP32-S3.</p>
+<p>Operation counts such as Floating Point Operations (FLOPs) and Multiply-Accumulate Operations (MACs) are widely used as proxies for computational efficiency in artificial intelligence. However, these metrics quantify arithmetic workload alone, whereas actual energy consumption depends on both computation and data movement. As AI inference is increasingly deployed on heterogeneous edge hardware, ranging from microcontrollers to cache-based and highly parallel processors, the extent to which operation counts remain reliable predictors of energy consumption is not fully understood.</p>
+<p>This study systematically evaluates the relationship between operation-based complexity metrics and measured energy consumption across a diverse set of model architectures and edge computing platforms. For each model-platform pair, operation counts are compared against directly measured inference energy, execution latency, and memory cost. </p>
+<p>The resulting benchmark characterizes how the relationship between operation counts and energy varies across several model architectures and two representative edge platforms: a Raspberry Pi single-board computer and an ESP32-S3 microcontroller, identifies conditions under which operation counts provide reliable estimates of energy cost, and highlights scenarios in which they systematically misrepresent deployment efficiency. These findings contribute to a more rigorous understanding of energy-aware AI evaluation.</p>
+<p>Completed Raspberry Pi phase results with 258 valid trials show that MAC count was strongly associated with net board-input energy across the corpus (Pearson <em>r</em> = 0.912 for FP32 and 0.914 for INT8), but two pairs of standard-depthwise models with only 0.203%–1.074% in MAC count consumed 32.0%–49.5% more energy in the depthwise condition. Completion of the ESP32-S3 phase will determine whether the magnitude and mechanism of this divergence change between Linux-based and microcontroller-class edge systems.</p>
 <p><strong>Keywords:</strong> edge inference; energy measurement;
 operation counts; TinyML; TensorFlow Lite; embedded machine learning</p>
 <h2 id="1-research-problem">1. Research problem</h2>
-<p>Inference is increasingly performed on microcontrollers and
-single-board computers rather than exclusively in cloud infrastructure.
-Local execution can reduce communication latency and dependence on a
-network, but it places model selection within a limited energy and
-memory budget. Efficiency therefore becomes part of whether a model can
-be deployed, rather than merely a desirable optimization.</p>
+<p>Artificial intelligence inference is increasingly deployed outside centralized cloud infrastructure and onto edge devices. This transition is driven by constraints that make local inference preferable to remote execution. The computational and energy requirements of a model influence whether it can run within available memory budgets and  operate for extended periods on battery-powered hardware while satisfying latency needs.</p>
 <p>Floating-point operations and multiply-accumulate operations are
 commonly used to compare model complexity because they can be computed
 without access to the final device. Parameter count and artifact size
@@ -107,6 +73,14 @@ measurements likewise indicate that hardware-aware predictors can
 outperform FLOPs alone [5]. These results suggest that the validity of
 an operation-count proxy depends on the models being compared and the
 platform executing them.</p>
+<p>Related work has approached this problem through direct benchmarking
+on edge devices, phase-aware TinyML energy measurement, and predictive
+models based on layer or platform characteristics [15–20]. Architecture
+studies likewise show that FLOPs can conceal memory-access and
+operator-efficiency effects, particularly for depthwise and pointwise
+convolutions [21,22]. The present study complements that literature by
+combining a deliberately structured model corpus with prespecified
+near-MAC comparisons and external board-input measurement.</p>
 <p>The study therefore asks:</p>
 <ol type="1">
 <li>How strongly do FLOPs and MACs correspond with measured inference
@@ -125,21 +99,19 @@ task-quality criteria, deployment artifacts, static metrics and
 controlled comparisons before physical energy results are inspected. The
 measurement phase executes those frozen artifacts without retraining or
 graph modification.</p>
-<p>The experimental unit is a model–platform pair: one artifact executed
-under one documented hardware and runtime configuration. The principal
-cross-platform condition uses the same full-integer INT8 TensorFlow Lite
-artifact on both platforms whenever deployment succeeds. FP32
-measurements on the Raspberry Pi provide a within-platform precision
-comparison rather than a second common cross-platform condition.</p>
-<p>Repeated measurement windows will quantify technical variation within
-each condition. They will not be treated as additional independent
-models. Trial order is randomized within each complete repetition so
-that one architecture or precision is not consistently measured earlier
-or at a lower device temperature.</p>
-<p>Confidence intervals for correlation and regression estimates will
-use 10,000 model-family cluster-bootstrap samples, preserving the
-dependence among related width variants. The Holm procedure will control
-family-wise error across the planned pair-by-platform tests.</p>
+<p>The basic experimental unit is a model-platform pair: one fixed model artifact executed under one fixed hardware and runtime configuration. Raspberry Pi FP32 measurements form a within-platform precision analysis while the primary cross-platform condition uses full integer INT8 TensorFlow Lite artifacts on the ESP32-S3. Repeated measurement windows are used to quantify how much technical variation occurs for a model-platform condition.</p>
+<p>Repeated measurement windows quantify technical variation within each
+condition and are not treated as additional independent models. In the
+Raspberry Pi experiment, every repetition contained all 86
+model–precision conditions once in randomized order so that one
+architecture or precision was not consistently measured earlier or at a
+lower device temperature.</p>
+<p>Corpus-level confidence intervals use 10,000 percentile bootstrap
+resamples of complete architecture families, preserving the dependence
+among widths from the same family [25]. The planned exact paired tests
+and multiplicity adjustments are retained in the supplementary result
+tables for auditability [14, 24].</p>
+
 <h2 id="3-model-corpus">3. Model corpus</h2>
 <p>The canonical corpus contains 43 trained neural networks. Four models
 act as application-oriented reference-style workloads: a ResNet-8-style
@@ -248,7 +220,7 @@ architectures resembling real TinyML workloads.</p>
 model deployment</h2>
 <p>All stochastic split and selection procedures use recorded seeds, and
 the resulting indices are retained. Normalization statistics are
-estimated from model-fitting data only. Held-out test data do not
+estimated from model-fitting data only. Test data do not
 contribute to training, early stopping or post-training quantization
 calibration.</p>
 <h3 id="41-inference-tasks">4.1 Inference tasks</h3>
@@ -339,19 +311,14 @@ parameter bytes</td>
 <td>Deployment storage</td>
 </tr>
 <tr>
-<td>Arithmetic intensity</td>
+<td>Static MAC-to-byte ratio</td>
 <td>MAC count divided by the static byte-access proxy</td>
-<td>Estimated work per byte</td>
+<td>Graph-derived work per estimated byte</td>
 </tr>
 <tr>
 <td>Operator composition</td>
 <td>Work distributed across operator types</td>
 <td>Computational structure</td>
-</tr>
-<tr>
-<td>BOPs</td>
-<td>MACs × weight bits × activation bits</td>
-<td>Precision-adjusted operation descriptor</td>
 </tr>
 </tbody>
 </table>
@@ -362,11 +329,11 @@ parameter bytes</td>
 <p>The factor of two represents one write and one later read for each
 intermediate output. This is a graph-derived lower-bound proxy, not a
 measurement of physical memory traffic. Cache reuse, tensor allocation
-and runtime-specific fusion will be addressed through the relationship
-between static predictors and the subsequent physical measurements.</p>
-<p>Within a single precision, BOPs are a constant multiple of MAC count
-and cannot provide an independent model ranking. Their main analytical
-role is therefore the FP32–INT8 comparison.</p>
+and runtime-specific fusion can make actual traffic differ substantially
+from this estimate.</p>
+<p>The static MAC-to-byte ratio is a graph-derived analogue of Roofline
+operational intensity [23]. It is not a measurement of operations per
+byte transferred at a cache or DRAM boundary.</p>
 <h2 id="6-controlled-pre-measurement-findings">6. Controlled
 pre-measurement findings</h2>
 <p>Nine standard/depthwise pairs have MAC differences below 10%. These
@@ -386,19 +353,15 @@ deployed INT8 quality for the nine matched pairs.</p>
 corresponding difference between <code>std_conv_32</code> and
 <code>dw_conv_64</code> on CIFAR-10 was 1.074%. The depthwise models had
 activation-output totals 3.975× and 3.889× those of their
-standard-convolution counterparts. Their static byte-access proxies were
-2.202 times and 2.784 times those of their standard-convolution
-counterparts. Task quality remained comparable, with the standard models
-leading by 1.175 percentage points on Speech Commands and 1.130
-percentage points on CIFAR-10.</p>
-<p>These are not energy results. They establish controlled conditions in
-which an arithmetic-only metric ranks two models as nearly equal even
-though their deployed graphs have different estimated data-access
-demands. Whether those differences affect latency and energy is the
-question carried into hardware measurement.</p>
+standard-convolution counterparts.</p>
+<p>These pre-hardware results established controlled conditions in which
+an arithmetic-only metric ranked two models as nearly equal even though
+their deployed graphs had different estimated data-access demands.
+Section 8 reports what happened when those conditions were measured on
+the Raspberry Pi.</p>
 <p>Across the full corpus, activation-output bytes and total static
 bytes have a moderate positive association: Pearson <em>r</em> = 0.504
-and Spearman ρ = 0.546. The relationship is incomplete because
+and Spearman ρ = 0.546. This relationship is incomplete because
 parameter-heavy networks can have large static-byte estimates without
 large intermediate activations.</p>
 <p><img src="analysis/figures/static_bytes_vs_macs_runtime_shape.png"
@@ -426,12 +389,11 @@ condition</h3>
 Cortex-A72 processor. TensorFlow Lite artifacts execute through LiteRT
 2.1.6 with the XNNPACK CPU backend and one inference thread. The
 inference and logging processes are assigned to separate CPU cores. The
-performance governor requests a fixed 1.8 GHz minimum and maximum
-frequency, with the resulting frequency and throttling state read back
-during trials. An externally powered room fan supplied ambient airflow
-during measurement-system characterization and remained outside the
-power-measurement boundary. Its position and operating mode will be
-fixed before formal trials.</p>
+performance governor fixes the requested minimum and maximum frequency
+at 1.8 GHz, with frequency and throttling state read back during every
+trial. An externally powered fan was held in a fixed position beside the
+bare board throughout formal measurement and remained outside the
+power-measurement boundary [28,31,32].</p>
 <p><img src="analysis/figures/raspberry_pi_ina226_power_path.png"
 alt="Raspberry Pi supply path through an INA226 current-monitoring module with a 2 mΩ shunt" /></p>
 <p><strong>Figure 5a.</strong> Raspberry Pi board-input measurement
@@ -450,13 +412,14 @@ positive 5 V supply path:</p>
 <pre class="text"><code>5 V source → INA226 Current+ → 0.002 Ω shunt → INA226 Current− → Raspberry Pi 5 V input</code></pre>
 <p>The measurement boundary includes the processor, memory and on-board
 regulation. It excludes the external fan and upstream supply losses, so
-results will be reported as board-input energy and not processor-core
+results are reported as board-input energy rather than processor-core
 energy.</p>
 <p>The INA226 is addressed through Raspberry Pi I²C bus 1. A 9 ms
-conversion interval provides approximately 111 result updates per
-second, while the logger polls the latest power result every 2 ms. Each
-observation receives a monotonic timestamp for numerical energy
-integration.</p>
+conversion interval provides approximately 111 physical result updates
+per second, while the logger polls the latest power register every 2 ms
+so that updates are unlikely to be missed. Faster polling does not
+create additional sensor bandwidth. Each observation receives a
+monotonic timestamp for numerical energy integration [26,27].</p>
 <p>Electrical-zero behaviour was characterized with the Raspberry Pi
 load disconnected and an Arduino Nano acting as the I²C host. Four
 repeats of 4,000 samples produced a combined apparent-current mean of
@@ -475,7 +438,7 @@ alt="Arduino serial output from an INA226 zero-current characterization run" /><
 4,000-sample zero-current run, including the run summary and read-error
 count.</p>
 <h3 id="72-fixed-measurement-inputs">7.2 Fixed measurement inputs</h3>
-<p>Four deterministic held-out measurement banks were prepared, one for
+<p>Four measurement banks were prepared, one for
 each task. Each contains 120 examples with CIFAR-10 contributing 12
 examples from every class and Speech Commands with 10 from each of 12
 classes. The VWW-style bank is balanced between person and no-person
@@ -485,76 +448,341 @@ machine-ID combination.</p>
 values. INT8 conversion, file loading and reshaping occur before the
 measured window so that preprocessing does not become part of the
 reported inference energy.</p>
-<h3 id="73-development-runtime-validation">7.3 Development-runtime
+<h3 id="73-deployment-and-input-validation">7.3 Deployment and input
 validation</h3>
-<p>All 86 artifacts—43 FP32 and 43 INT8—completed compatibility
-validation with the development-machine TensorFlow Lite runtime. The
-fixed input banks completed 10,320 validation invocations without an
-invocation failure, non-finite output or complete INT8 input saturation.
-Artifact format, tensor metadata, allocation, input conversion and
-inference completion were checked before platform deployment.</p>
-<p>Final Raspberry Pi runtime smoke testing will follow the revised
-logger and trial-controller freeze. The ESP32-S3 condition will use
-full-integer inference through TensorFlow Lite Micro. Its toolchain,
-kernel implementation, processor settings and tensor arena will be fixed
-before formal measurement. Successful deployment will define the common
-cross-platform set; any unsupported model will remain part of the
-platform-suitability record.</p>
-<h2 id="8-next-phase">8. Next phase</h2>
-<p>The completed phase has produced the trained corpus, frozen
-deployment artifacts, static predictor table, prespecified comparisons,
-measurement inputs and Raspberry Pi runtime controls. Hardware
-measurement now begins with formal Raspberry Pi trials, followed by
-ESP32-S3 deployment and measurement.</p>
-<p>Each experimental repetition will contain every planned condition
-once in randomized order. The formal trial register will retain the
-model, precision, execution order, inference count, phase duration,
-energy, latency, voltage, temperature, frequency and runtime-control
-fields. Active-window energy will be integrated from timestamped power
-samples and interpreted against the paired idle condition.</p>
-<p>The final analysis will compare MACs and FLOPs with directly measured
-energy, then test whether latency or memory-facing descriptors better
-explain the observed variation.</p>
+<p>All 86 artifacts completed compatibility
+validation with the development-machine TensorFlow Lite runtime and
+deployment smoke testing through the Raspberry Pi runtime. The fixed
+input banks completed 10,320 development-side validation invocations
+without invocation failure, non-finite output or complete INT8 input
+saturation. Artifact format, tensor metadata, allocation, input
+conversion and inference completion were checked before formal
+measurement.</p>
+<p>The ESP32-S3 condition will use full-integer inference through
+TensorFlow Lite Micro. Its runtime configuration will be fixed before formal
+measurement. Successful deployment will define the common cross-platform
+set; any unsupported model will remain part of the platform-suitability
+record [12,29,30].</p>
+<h2 id="8-raspberry-pi-formal-results">8. Raspberry Pi formal
+results</h2>
+<h3 id="81-trial-completion-and-measurement-quality">8.1 Trial
+completion and measurement quality</h3>
+<p>Every scheduled Raspberry Pi trial completed and satisfied the frozen
+technical validity rules: 43 models × 2 precisions × 3 randomized
+repetitions, or 258 valid trials. There were no inference failures or
+measured-window logger errors. All trials began and ended at 1.8 GHz
+with throttling flags equal to <code>0x0</code>.</p>
+<p>The minimum observed bus voltage was 4.979 V, the maximum logged
+processor temperature was 51.608 °C and the largest power-poll gap was
+10.211 ms. These remained within the predeclared limits of 4.90 V, 63 °C
+and 18 ms. Absolute pre/post idle drift did not exceed 1.084%.</p>
+<p>Across the 86 model–precision conditions, the median repeat-level
+coefficient of variation in net energy was 0.778%; the 90th percentile
+was 2.984%, and 84 conditions were at or below 5%. The two conditions
+above 5% were retained because the protocol did not permit exclusions
+based on the measured energy outcome.</p>
+<p><img src="analysis/figures/rpi4_repeatability.png"
+alt="Repeatability of net board-input energy across the formal Raspberry Pi conditions" /></p>
+<p><strong>Figure 7.</strong> Each dot represents one model at one
+precision and shows the coefficient of variation, CV (CV = standard deviation divided bymean) across its three
+net-energy measurements. The dots are sorted from lowest to highest
+CV. 84 of the 86
+model–precision combinations were at or below the dashed 5% reference.</p>
+<h3 id="82-corpus-wide-relationships">8.2 Corpus-wide relationships</h3>
+<p>After averaging the three runs for each model at each precision, net
+energy ranged from 31.62 to 4,795.94 µJ per
+inference. MAC count had a strong raw association with energy in both
+precisions. Activation-output bytes were also positively associated with
+energy while the static byte-access proxy had a weaker
+correlation, particularly for INT8. Median invocation latency had the
+strongest measured association.</p>
+<table>
+<thead>
+<tr>
+<th>Predictor</th>
+<th style="text-align: right;">FP32 Pearson <em>r</em> (95%
+family-bootstrap confidence interval)</th>
+<th style="text-align: right;">INT8 Pearson <em>r</em> (95%
+family-bootstrap confidence interval)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MAC count</td>
+<td style="text-align: right;">0.912 [0.790, 0.986]</td>
+<td style="text-align: right;">0.914 [0.867, 0.976]</td>
+</tr>
+<tr>
+<td>Static byte-access proxy</td>
+<td style="text-align: right;">0.555 [0.314, 0.849]</td>
+<td style="text-align: right;">0.400 [−0.018, 0.859]</td>
+</tr>
+<tr>
+<td>Activation-output bytes</td>
+<td style="text-align: right;">0.687 [0.246, 0.886]</td>
+<td style="text-align: right;">0.804 [0.505, 0.931]</td>
+</tr>
+<tr>
+<td>Median invocation latency</td>
+<td style="text-align: right;">0.998 [0.997, 0.999]</td>
+<td style="text-align: right;">0.998 [0.994, 0.999]</td>
+</tr>
+</tbody>
+</table>
+<p><img src="analysis/figures/rpi4_energy_vs_macs.png"
+alt="Raspberry Pi net energy against deployed-graph MAC count" /></p>
+<p><strong>Figure 8.</strong> Mean net board-input energy per
+inference against deployed-graph MAC count. The black line in each panel
+is the ordinary least-squares regression of log10 energy on log10 MAC
+count across all 43 models at that precision. Rings and
+connecting lines identify the two prespecified near-MAC
+standard-depthwise pairs.</p>
+<p><img src="analysis/figures/rpi4_energy_vs_static_bytes.png"
+alt="Raspberry Pi net energy against the static byte-access proxy" /></p>
+<p><strong>Figure 9.</strong> Mean net board-input energy per
+inference against the static byte-access proxy. The proxy describes graph structure but does not directly
+measure cache or DRAM traffic.</p>
+<p>The task-adjusted baseline model used MAC count, parameter bytes and
+task. It explained 94.7% of the FP32 energy variation and 88.9% of the
+INT8 variation. Replacing parameter bytes with the predeclared static
+byte-access proxy increased those values to 98.9% and 91.1%, respectively.</p>
+
+<h3 id="83-controlled-near-mac-comparisons">8.3 Controlled near-MAC
+comparisons</h3>
+<p>The controlled pairs produced the clearest practical failure of
+arithmetic-only ranking. All three paired repetitions had the same
+direction in every comparison: the depthwise model required more net
+energy.</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th style="text-align: right;">Precision</th>
+<th style="text-align: right;">Absolute task-quality difference
+(percentage points)</th>
+<th style="text-align: right;">Standard energy (µJ)</th>
+<th style="text-align: right;">Depthwise energy (µJ)</th>
+<th style="text-align: right;">Depthwise/standard energy ratio (observed
+three-run range)</th>
+<th style="text-align: right;">Energy change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CIFAR-10</td>
+<td style="text-align: right;">FP32</td>
+<td style="text-align: right;">0.890</td>
+<td style="text-align: right;">1,823.42</td>
+<td style="text-align: right;">2,574.61</td>
+<td style="text-align: right;">1.412 [1.389, 1.433]</td>
+<td style="text-align: right;">+41.2%</td>
+</tr>
+<tr>
+<td>CIFAR-10</td>
+<td style="text-align: right;">INT8</td>
+<td style="text-align: right;">1.130</td>
+<td style="text-align: right;">1,117.00</td>
+<td style="text-align: right;">1,669.76</td>
+<td style="text-align: right;">1.495 [1.417, 1.539]</td>
+<td style="text-align: right;">+49.5%</td>
+</tr>
+<tr>
+<td>Speech Commands</td>
+<td style="text-align: right;">FP32</td>
+<td style="text-align: right;">1.163</td>
+<td style="text-align: right;">754.39</td>
+<td style="text-align: right;">995.68</td>
+<td style="text-align: right;">1.320 [1.296, 1.360]</td>
+<td style="text-align: right;">+32.0%</td>
+</tr>
+<tr>
+<td>Speech Commands</td>
+<td style="text-align: right;">INT8</td>
+<td style="text-align: right;">1.175</td>
+<td style="text-align: right;">518.47</td>
+<td style="text-align: right;">750.56</td>
+<td style="text-align: right;">1.448 [1.443, 1.451]</td>
+<td style="text-align: right;">+44.8%</td>
+</tr>
+</tbody>
+</table>
+<p><img src="analysis/figures/rpi4_primary_near_mac_pairs.png"
+alt="Formal Raspberry Pi energy results for the prespecified near-MAC pairs" /></p>
+<p><strong>Figure 10.</strong> Bars show the three-run mean and points show
+the three individual paired runs for each prespecified
+comparison.</p>
+<p>Depthwise latency was 28.4%–52.9% higher, while incremental active
+power ranged from 4.9% lower to 5.0% higher. Longer execution time
+therefore accounted for most of the observed energy difference under the
+fixed one-thread XNNPACK condition.</p>
+<p>Depthwise energy was higher in all three repetitions of every primary
+comparison. Across the eight additional near-MAC pairs and both precisions,
+depthwise energy was also higher in all sixteen exploratory comparisons.
+Because models recur across these overlapping comparisons, this pattern
+is reported as exploratory consistency rather than independent
+confirmatory evidence.</p>
+
+<h3 id="84-latency-and-precision">8.4 Latency and precision</h3>
+<p><img src="analysis/figures/rpi4_energy_vs_latency.png"
+alt="Raspberry Pi net energy against median invocation latency" /></p>
+<p><strong>Figure 11.</strong> Median invocation latency was almost
+perfectly associated with net energy under the controlled Raspberry Pi
+runtime.</p>
+<p>INT8 required less energy than FP32 for all 43 models. The median
+INT8-to-FP32 energy ratio was 0.672 [0.568, 0.752], equivalent to a
+median reduction of 32.8%. INT8 also reduced latency for 37 of 43
+models, with a median latency ratio of 0.817 [0.652, 0.927].</p>
+<p><img src="analysis/figures/rpi4_fp32_vs_int8_energy.png"
+alt="Within-model comparison of Raspberry Pi FP32 and INT8 energy" /></p>
+<p><strong>Figure 12.</strong> All 43 models lie below the equality
+line, showing lower three-run mean energy for INT8 than FP32.</p>
+<h2 id="9-interpretation-and-limitations">9. Interpretation and
+limitations</h2>
+<p>The Raspberry Pi results distinguish broad prediction from local
+model selection. MAC count tracks energy well across a corpus spanning
+more than two orders of magnitude but it does not reliably distinguish
+architectures at closely matched arithmetic workload.</p>
+<p>The static byte-access proxy retained information after MAC count and
+task were considered, but it is not a measurement of memory traffic. No
+processor performance counters were retained to separate cache reuse,
+DRAM transfers, kernel fusion or memory stalls. Latency provided the
+strongest measured explanation on this platform but it is a
+post-deployment quantity and cannot replace a static predictor during
+early model design.</p>
+<p>The
+INA226 uses its nominal 0.002 Ω shunt value and lacks traceable
+multipoint calibration so results support controlled within-platform
+comparisons rather than traceable absolute-energy claims. The role-based
+corpus also intentionally contains more CIFAR-10 probes than other tasks.</p>
+<h2 id="10-next-phase">10. Next phase</h2>
+<p>The next stage is deployment and formal INT8 measurement on the
+ESP32-S3. That phase will determine the common deployable set, document
+internal-RAM and PSRAM placement, and complete the planned
+cross-platform matched-pair tests. Until then, the reported findings
+apply to the fixed Raspberry Pi LiteRT/XNNPACK condition only.</p>
 <h2 id="references">References</h2>
 <ol type="1">
 <li>Horowitz, M. (2014). Computing's energy problem (and what we can do
-about it). <em>IEEE International Solid-State Circuits
-Conference</em>.</li>
+about it). <em>2014 IEEE International Solid-State Circuits Conference
+Digest of Technical Papers</em>, 10–14. <a
+href="https://doi.org/10.1109/ISSCC.2014.6757323">https://doi.org/10.1109/ISSCC.2014.6757323</a></li>
 <li>Sze, V., Chen, Y.-H., Yang, T.-J., &amp; Emer, J. S. (2017).
 Efficient processing of deep neural networks: A tutorial and survey.
 <em>Proceedings of the IEEE</em>, 105(12), 2295–2329. <a
 href="https://doi.org/10.1109/JPROC.2017.2761740">https://doi.org/10.1109/JPROC.2017.2761740</a></li>
 <li>Henderson, P., Hu, J., Romoff, J., Brunskill, E., Jurafsky, D.,
 &amp; Pineau, J. (2020). Towards the systematic reporting of the energy
-and carbon footprints of machine learning. arXiv:2002.05651.</li>
+and carbon footprints of machine learning. <em>Journal of Machine
+Learning Research</em>, 21(248), 1–43. <a
+href="https://www.jmlr.org/papers/v21/20-312.html">https://www.jmlr.org/papers/v21/20-312.html</a></li>
 <li>Banbury, C., Reddi, V. J., Torelli, P., et al. (2021). MLPerf Tiny
-Benchmark. <em>NeurIPS Datasets and Benchmarks</em>.</li>
+Benchmark. <em>Proceedings of the NeurIPS Datasets and Benchmarks
+Track</em>. <a
+href="https://datasets-benchmarks-proceedings.neurips.cc/paper_files/paper/2021/hash/da4fb5c6e93e74d3df8527599fa62642-Abstract-round1.html">Official proceedings record</a>.</li>
 <li>Tu, X., Mallik, A., Chen, D., et al. (2023). Unveiling energy
 efficiency in deep learning: Measurement, prediction, and scoring across
-edge devices. <em>ACM/IEEE Symposium on Edge Computing</em>, 80–93.</li>
+edge devices. <em>ACM/IEEE Symposium on Edge Computing</em>, 80–93. <a
+href="https://doi.org/10.1145/3583740.3628442">https://doi.org/10.1145/3583740.3628442</a></li>
 <li>Krizhevsky, A. (2009). <em>Learning Multiple Layers of Features from
-Tiny Images</em>.</li>
+Tiny Images</em>. University of Toronto. <a
+href="https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf">Technical report</a>.</li>
 <li>Warden, P. (2018). Speech Commands: A dataset for limited-vocabulary
-speech recognition. arXiv:1804.03209.</li>
+speech recognition. <em>arXiv:1804.03209</em>. <a
+href="https://doi.org/10.48550/arXiv.1804.03209">https://doi.org/10.48550/arXiv.1804.03209</a></li>
 <li>Lin, T.-Y., Maire, M., Belongie, S., et al. (2014). Microsoft COCO:
 Common objects in context. <em>European Conference on Computer
-Vision</em>.</li>
+Vision</em>, 740–755. <a
+href="https://doi.org/10.1007/978-3-319-10602-1_48">https://doi.org/10.1007/978-3-319-10602-1_48</a></li>
 <li>Chowdhery, A., Warden, P., Shlens, J., Howard, A., &amp; Rhodes, R.
-(2019). Visual Wake Words Dataset. arXiv:1906.05721.</li>
+(2019). Visual Wake Words Dataset. <em>arXiv:1906.05721</em>. <a
+href="https://doi.org/10.48550/arXiv.1906.05721">https://doi.org/10.48550/arXiv.1906.05721</a></li>
 <li>Koizumi, Y., Saito, S., Uematsu, H., Harada, N., &amp; Imoto, K.
 (2019). ToyADMOS: A dataset of miniature-machine operating sounds for
 anomalous sound detection. <em>IEEE Workshop on Applications of Signal
-Processing to Audio and Acoustics</em>.</li>
+Processing to Audio and Acoustics</em>, 313–317. <a
+href="https://doi.org/10.1109/WASPAA.2019.8937164">https://doi.org/10.1109/WASPAA.2019.8937164</a></li>
 <li>Jacob, B., Kligys, S., Chen, B., et al. (2018). Quantization and
 training of neural networks for efficient integer-arithmetic-only
 inference. <em>IEEE/CVF Conference on Computer Vision and Pattern
-Recognition</em>.</li>
-<li>David, R., Duke, J., Jain, A., et al. (2020). TensorFlow Lite Micro:
-Embedded machine learning on TinyML systems. arXiv:2010.08678.</li>
+Recognition</em>, 2704–2713. <a
+href="https://openaccess.thecvf.com/content_cvpr_2018/html/Jacob_Quantization_and_Training_CVPR_2018_paper.html">Official paper</a>.</li>
+<li>David, R., Duke, J., Jain, A., et al. (2021). TensorFlow Lite Micro:
+Embedded machine learning for TinyML systems. <em>Proceedings of
+Machine Learning and Systems</em>, 3. <a
+href="https://proceedings.mlsys.org/paper_files/paper/2021/hash/6c44dc73014d66ba49b28d483a8f8b0d-Abstract.html">Official proceedings record</a>.</li>
 <li>Banbury, C., Zhou, C., Fedorov, I., et al. (2021). MicroNets: Neural
 network architectures for deploying TinyML applications on commodity
 microcontrollers. <em>Proceedings of Machine Learning and
-Systems</em>.</li>
+Systems</em>, 3. <a
+href="https://proceedings.mlsys.org/paper_files/paper/2021/hash/c4d41d9619462c534b7b61d1f772385e-Abstract.html">Official proceedings record</a>.</li>
+<li>Holm, S. (1979). A simple sequentially rejective multiple test
+procedure. <em>Scandinavian Journal of Statistics</em>, 6(2),
+65–70.</li>
+<li>Baller, S. P., Jindal, A., Chadha, M., &amp; Gerndt, M. (2021).
+DeepEdgeBench: Benchmarking deep neural networks on edge devices.
+<em>2021 IEEE International Conference on Cloud Engineering</em>,
+20–30. <a href="https://doi.org/10.1109/IC2E52221.2021.00016">https://doi.org/10.1109/IC2E52221.2021.00016</a></li>
+<li>Bartoli, P., Veronesi, C., Giudici, A., Siorpaes, D., Trojaniello,
+D., &amp; Zappa, F. (2025). Benchmarking energy and latency in TinyML: A
+novel method for resource-constrained AI. <em>2025 International Joint
+Conference on Neural Networks</em>, 1–8. <a
+href="https://doi.org/10.1109/IJCNN64981.2025.11228997">https://doi.org/10.1109/IJCNN64981.2025.11228997</a></li>
+<li>Cai, E., Juan, D.-C., Stamoulis, D., &amp; Marculescu, D. (2017).
+NeuralPower: Predict and deploy energy-efficient convolutional neural
+networks. <em>arXiv:1710.05420</em>. <a
+href="https://doi.org/10.48550/arXiv.1710.05420">https://doi.org/10.48550/arXiv.1710.05420</a></li>
+<li>Rodrigues, C. F., Riley, G., &amp; Luján, M. (2020). Energy
+predictive models for convolutional neural networks on mobile platforms.
+<em>arXiv:2004.05137</em>. <a
+href="https://doi.org/10.48550/arXiv.2004.05137">https://doi.org/10.48550/arXiv.2004.05137</a></li>
+<li>Speckhard, D. T., Misiunas, K., Perel, S., Zhu, T., Carlile, S.,
+&amp; Slaney, M. (2023). Neural architecture search for energy-efficient
+always-on audio machine learning. <em>Neural Computing and
+Applications</em>, 35, 12133–12144. <a
+href="https://doi.org/10.1007/s00521-023-08345-y">https://doi.org/10.1007/s00521-023-08345-y</a></li>
+<li>Tschand, A., Rajan, A. T. R., Idgunji, S., et al. (2025). MLPerf
+Power: Benchmarking the energy efficiency of machine learning systems
+from microwatts to megawatts for sustainable AI. <em>2025 IEEE
+International Symposium on High Performance Computer Architecture</em>.
+<a href="https://doi.org/10.1109/HPCA61900.2025.00092">https://doi.org/10.1109/HPCA61900.2025.00092</a></li>
+<li>Ma, N., Zhang, X., Zheng, H.-T., &amp; Sun, J. (2018). ShuffleNet
+V2: Practical guidelines for efficient CNN architecture design.
+<em>European Conference on Computer Vision</em>, 116–131. <a
+href="https://openaccess.thecvf.com/content_ECCV_2018/html/Ningning_Light-weight_CNN_Architecture_ECCV_2018_paper.html">Official paper</a>.</li>
+<li>Ancilotto, A., Paissan, F., &amp; Farella, E. (2023). XiNet:
+Efficient neural networks for tinyML. <em>IEEE/CVF International
+Conference on Computer Vision</em>, 16968–16977. <a
+href="https://openaccess.thecvf.com/content/ICCV2023/html/Ancilotto_XiNet_Efficient_Neural_Networks_for_tinyML_ICCV_2023_paper.html">Official paper</a>.</li>
+<li>Williams, S., Waterman, A., &amp; Patterson, D. (2009). Roofline:
+An insightful visual performance model for multicore architectures.
+<em>Communications of the ACM</em>, 52(4), 65–76. <a
+href="https://doi.org/10.1145/1498765.1498785">https://doi.org/10.1145/1498765.1498785</a></li>
+<li>Benjamini, Y., &amp; Hochberg, Y. (1995). Controlling the false
+discovery rate: A practical and powerful approach to multiple testing.
+<em>Journal of the Royal Statistical Society: Series B</em>, 57(1),
+289–300. <a
+href="https://doi.org/10.1111/j.2517-6161.1995.tb02031.x">https://doi.org/10.1111/j.2517-6161.1995.tb02031.x</a></li>
+<li>Davison, A. C., &amp; Hinkley, D. V. (1997). <em>Bootstrap methods
+and their application</em>. Cambridge University Press. <a
+href="https://www.cambridge.org/core/books/bootstrap-methods-and-their-application/ED2FD043579F27952363566DC09CBD6A">Publisher record</a>.</li>
+<li>Texas Instruments. (2024). <em>INA226 high-side or low-side
+measurement, bidirectional current and power monitor with I²C-compatible
+interface</em> (Rev. B). <a
+href="https://www.ti.com/lit/ds/symlink/ina226.pdf">Datasheet</a>.</li>
+<li>Linux kernel documentation. (n.d.). <em>Kernel driver ina2xx</em>.
+<a href="https://www.kernel.org/doc/html/latest/hwmon/ina2xx.html">Driver documentation</a>.</li>
+<li>Raspberry Pi Ltd. (2019). <em>Raspberry Pi 4 Model B product
+brief</em>. <a
+href="https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-product-brief.pdf">Product brief</a>.</li>
+<li>Espressif Systems. (n.d.-a). <em>ESP32-S3 technical reference
+manual</em>. <a
+href="https://www.espressif.com/sites/default/files/documentation/esp32-s3_technical_reference_manual_en.pdf">Technical reference manual</a>.</li>
+<li>Espressif Systems. (n.d.-b). <em>ESP32-S3-DevKitC-1 user guide</em>.
+<a href="https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/">Development-board guide</a>.</li>
+<li>Google. (n.d.). <em>XNNPACK</em>. <a
+href="https://github.com/google/XNNPACK">Official repository</a>.</li>
+<li>Google AI Edge. (n.d.). <em>LiteRT Interpreter API</em>. <a
+href="https://ai.google.dev/edge/api/tflite/python/tf/lite/Interpreter">API documentation</a>.</li>
 </ol>
     </article>
   </main>

@@ -51,11 +51,15 @@
           <h3>Energy measurement for edge inference</h3>
           <p>
             This study examines when operation counts cease to be reliable
-            predictors of the energy consumed by neural network inference. A thorough qualitative analysis has been made on static predictors of the 43 trained and converted deployable TensorFlow Lite artifacts from a controlled model corpus. The next phase measures
-            board-level inference energy and compares it with arithmetic and runtime indicators across different execution systems.
+            predictors of neural-network inference energy. The completed
+            Raspberry Pi phase contains 258 valid trials across 43 models and
+            two precisions. MAC count tracked broad energy scaling, but
+            closely matched standard/depthwise pairs differed by 32.0%–49.5%
+            in measured board-input energy. ESP32-S3 measurement is the next
+            cross-platform phase.
           </p>
           <p class="work-note">
-            In active progress.
+            Raspberry Pi experiment complete; microcontroller phase in progress.
           </p>
           <div class="project-links">
             <a href="projects/edge-inference-energy/">Read the case study</a>
