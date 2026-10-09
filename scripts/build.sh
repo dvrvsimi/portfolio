@@ -72,6 +72,14 @@ cp "$workspace_dir/hardware/data/figures/ina226_zero_offset_bench.jpg" \
   "$site_dir/projects/edge-inference-energy/analysis/figures/"
 cp "$workspace_dir/hardware/data/figures/ina226_zero_offset_serial.png" \
   "$site_dir/projects/edge-inference-energy/analysis/figures/"
+cp "$workspace_dir/hardware/esp32/analysis/figures/esp32_energy_vs_macs.png" \
+  "$site_dir/projects/edge-inference-energy/analysis/figures/"
+cp "$workspace_dir/hardware/esp32/analysis/figures/esp32_energy_vs_latency.png" \
+  "$site_dir/projects/edge-inference-energy/analysis/figures/"
+cp "$workspace_dir/hardware/esp32/analysis/figures/primary_pair_platform_reversal.png" \
+  "$site_dir/projects/edge-inference-energy/analysis/figures/"
+cp "$workspace_dir/hardware/esp32/analysis/figures/cross_platform_energy_comparison.png" \
+  "$site_dir/projects/edge-inference-energy/analysis/figures/"
 
 pandoc "$workspace_dir/rice bme/incubed/INCUBED_TECHNICAL_CASE_STUDY.md" \
   --from=gfm \
