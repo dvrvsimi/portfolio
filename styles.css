@@ -419,6 +419,14 @@ table {
   line-height: 1.45;
 }
 
+.project-report caption {
+  caption-side: top;
+  padding: 0 0 0.55rem;
+  font-weight: 700;
+  text-align: left;
+  break-after: avoid;
+}
+
 th,
 td {
   min-width: 150px;
@@ -554,6 +562,14 @@ code {
   figure,
   img {
     break-inside: avoid;
+  }
+
+  .project-report p:has(> img) {
+    break-after: avoid;
+  }
+
+  .project-report p:has(> img) + p {
+    break-before: avoid;
   }
 
   table {
