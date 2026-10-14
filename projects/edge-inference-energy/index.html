@@ -46,7 +46,7 @@ complete. The study contains 387 accepted hardware trials.</p>
 <p>Operation counts such as Floating Point Operations (FLOPs) and Multiply-Accumulate Operations (MACs) are widely used as proxies for computational efficiency in artificial intelligence. However, these metrics quantify arithmetic workload alone, whereas actual energy consumption depends on both computation and data movement. As AI inference is increasingly deployed on heterogeneous edge hardware, ranging from microcontrollers to cache-based and highly parallel processors, the extent to which operation counts remain reliable predictors of energy consumption is not fully understood.</p>
 <p>This study systematically evaluates the relationship between operation-based complexity metrics and measured energy consumption across a diverse set of model architectures and edge computing platforms. For each model-platform pair, operation counts are compared against directly measured inference energy, execution latency, and graph-derived memory proxies.</p>
 <p>The resulting benchmark characterizes how the relationship between operation counts and energy varies across several model architectures and two representative edge platforms: a Raspberry Pi single-board computer and an ESP32-S3 microcontroller, identifies conditions under which operation counts provide reliable estimates of energy cost, and highlights scenarios in which they systematically misrepresent deployment efficiency. These findings contribute to a more rigorous understanding of energy-aware AI evaluation.</p>
-<p>Across 258 Raspberry Pi and 129 ESP32-S3 trials, MAC count tracked broad energy scaling on both platforms but more strongly on Raspberry Pi INT8 (log-scale Pearson <em>r</em> = 0.973) than on ESP32-S3 (<em>r</em> = 0.820). The common INT8 energy rankings were related but not interchangeable. In two prespecified model pairs with only 0.203%–1.074% difference in MAC count, depthwise energy was 44.8%–49.5% higher on the Raspberry Pi but 2.3%–19.9% lower on the ESP32-S3. Operation count is therefore useful for broad within-platform scaling but not as a hardware-independent selector between structurally different models with similar arithmetic workloads.</p>
+<p>Across 258 Raspberry Pi and 129 ESP32-S3 trials, MAC count tracked broad energy scaling on both platforms. However, two prespecified model pairs differed by only 0.203%–1.074% in MAC count while depthwise energy was 44.8%–49.5% higher on the Raspberry Pi and 82.4%–88.9% higher on the ESP32-S3. Measured latency had the strongest association with energy on both platforms. Operation count is therefore useful for broad within-platform scaling but cannot reliably quantify the energy gap between structurally different models across hardware and runtime environments.</p>
 <p><strong>Keywords:</strong> edge inference; energy measurement;
 operation counts; TinyML; TensorFlow Lite; embedded machine learning</p>
 <h2 id="1-research-problem">1. Research problem</h2>
@@ -66,19 +66,19 @@ may be insignificant on one processor and consequential on another.</p>
 <p>Direct measurements have already established that raw operation count
 is not universally equivalent to inference energy. Wess et al. found
 latency more predictive than layer operation count across several DNN
-accelerators [34], while Speckhard et al. observed substantial energy
+accelerators [32], while Speckhard et al. observed substantial energy
 variation among mobile-CPU architectures with similar FLOP counts and a
-strong latency-energy relationship [19]. Lahmer et al. derived layer-
-and board-specific energy models for NVIDIA edge boards [35], and Guo
+strong latency-energy relationship [18]. Lahmer et al. derived layer-
+and board-specific energy models for NVIDIA edge boards [33], and Guo
 et al. combined network-structure and device encodings in a learned
-cross-device predictor [36]. Mobile system-on-chip studies similarly
+cross-device predictor [34]. Mobile system-on-chip studies similarly
 show that hardware-aware execution characteristics can outperform FLOPs
 alone [5]. Conversely, operation count can remain useful inside a
 tightly constrained microcontroller search space [13].</p>
 <p>Related work also covers systematic energy reporting and direct edge
-benchmarking [3,15,16,20], model-based energy prediction [17,18], and
+benchmarking [3,14,15,19], model-based energy prediction [16,17], and
 architecture studies showing that memory access and operator
-implementation affect realized efficiency [21,22].</p>
+implementation affect realized efficiency [20,21].</p>
 <p>Building on this evidence, the present study tests whether the
 predictive value of operation counts and the model rankings they imply
 remain stable when the same set of model artifacts is evaluated across
@@ -110,9 +110,7 @@ randomized repetition. This randomized approach prevented one architecture class
 being consistently measured earlier or at a lower device temperature.</p>
 <p>Corpus-level confidence intervals use 10,000 percentile bootstrap
 resamples of complete architecture families, preserving the dependence
-among widths from the same family [25]. Planned Holm and
-Benjamini–Hochberg multiplicity adjustments are retained in the
-supplementary result tables for auditability [14,24].</p>
+among widths from the same family [23].</p>
 
 <h2 id="3-model-corpus">3. Model corpus</h2>
 <p>The canonical corpus contains 43 trained neural networks. Four models
@@ -334,7 +332,7 @@ measurement of physical memory traffic. Cache reuse, tensor allocation
 and runtime-specific fusion can make actual traffic differ substantially
 from this estimate.</p>
 <p>The static MAC-to-byte ratio is a graph-derived analogue of Roofline
-operational intensity [23]. It is not a measurement of operations per
+operational intensity [22]. It is not a measurement of operations per
 byte transferred at a cache or DRAM boundary.</p>
 <h2 id="6-controlled-pre-measurement-findings">6. Controlled
 pre-measurement findings</h2>
@@ -384,7 +382,7 @@ part of the research question. The common condition instead fixes the
 INT8 artifact, input values and measurement principles.</p>
 <p>Both boards were powered through the same modified USB-C cable. Its
 5 V conductor passed through the INA226 module's nominal 0.002 Ω shunt
-before reaching the device under test [26,27]. The measurement boundary
+before reaching the device under test [24,25]. The measurement boundary
 includes the selected board and its on-board regulation, but excludes
 the upstream supply and an independently powered cooling fan used to keep board temperature fairly constant across inference periods.</p>
 <p><img src="analysis/figures/shared_ina226_power_path.png"
@@ -394,9 +392,9 @@ same modified USB-C cable and INA226 module were used for both boards.</p>
 <h3 id="71-raspberry-pi-execution-condition">7.1 Raspberry Pi execution
 condition</h3>
 <p>The Raspberry Pi 4 uses a 64-bit Linux environment on its Arm
-Cortex-A72 processor [28]. TensorFlow Lite artifacts execute through
+Cortex-A72 processor [26]. TensorFlow Lite artifacts execute through
 LiteRT 2.1.6 with the XNNPACK CPU backend and one inference thread
-[31,32]. The
+[29,30]. The
 inference and logging processes are assigned to separate CPU cores. The
 performance governor fixes the requested minimum and maximum frequency
 at 1.8 GHz, with frequency and throttling state read back during every
@@ -407,7 +405,7 @@ power-measurement boundary.</p>
 conversion interval provides approximately 111 physical result updates
 per second, while the logger polls the latest power register every 2 ms
 so that updates are unlikely to be missed. Faster polling does not
-create additional sensor bandwidth [26,27]. Each observation receives a
+create additional sensor bandwidth [24,25]. Each observation receives a
 monotonic timestamp for numerical energy integration.</p>
 <p>Electrical-zero behaviour was characterized with the Raspberry Pi
 load disconnected and an Arduino Nano acting as the I²C host. Four
@@ -427,7 +425,8 @@ zero-current run.</p>
 <h3 id="72-esp32-s3-execution-and-measurement">7.2 ESP32-S3 execution
 and measurement</h3>
 <p>The ESP32-S3 executes the INT8 models through TensorFlow Lite Micro
-with optimized ESP-NN kernels at a fixed 240 MHz [12,29,33]. Model
+1.4.0 with ESP-NN pinned to exactly 1.4.1 and optimized kernels at a
+fixed 240 MHz [12,27,31]. Model
 storage is memory-mapped, while the input bank and tensor arena use
 PSRAM. Each trial uses 25 warm-up invocations, a five-second settling
 period and adjacent ten-second pre-idle, active and post-idle windows.</p>
@@ -445,7 +444,7 @@ boundaries and power observations share one monotonic clock. This avoids
 mapping the ESP32-S3 clock onto the recorder clock or treating delayed
 USB serial messages as precise boundaries. A MacBook Pro, outside the
 measurement boundary, sends trial commands over USB-UART and retains the
-ESP32-S3 invocation-latency output [30].</p>
+ESP32-S3 invocation-latency output [28].</p>
 <h3 id="73-fixed-measurement-inputs">7.3 Fixed measurement inputs</h3>
 <p>Four measurement banks were prepared, one for
 each task. Each contains 120 examples with CIFAR-10 contributing 12
@@ -524,24 +523,28 @@ with throttling flags equal to <code>0x0</code>.</p>
 <td>No failed inference, power-read or auxiliary-read errors in accepted trials</td>
 </tr>
 <tr>
-<td>ESP32-S3 — failed pre-measurement attempt</td>
-<td>One UART failure before power capture; retained in the audit record and not counted as a measurement trial</td>
+<td>ESP32-S3 — retained pre-measurement attempt</td>
+<td>One serial-complete attempt without an accepted power record; retained in the audit record and replaced</td>
 </tr>
 <tr>
 <td>ESP32-S3 — repeatability</td>
-<td>Median energy CV: 0.347%; maximum: 1.195%</td>
+<td>Median energy CV: 0.313%; maximum: 1.728%</td>
 </tr>
 <tr>
 <td>ESP32-S3 — minimum bus voltage</td>
-<td>5.203 V</td>
+<td>5.196 V</td>
 </tr>
 <tr>
 <td>ESP32-S3 — maximum device temperature</td>
-<td>37.2 °C</td>
+<td>36.2 °C</td>
 </tr>
 <tr>
 <td>ESP32-S3 — maximum power-poll gap</td>
-<td>27.676 ms; predeclared maximum: 50 ms</td>
+<td>28.488 ms; predeclared maximum: 50 ms</td>
+</tr>
+<tr>
+<td>ESP32-S3 — maximum absolute idle drift</td>
+<td>1.111%</td>
 </tr>
 </tbody>
 </table>
@@ -552,7 +555,7 @@ platforms. The dashed line marks the 5% review threshold.</p>
 <h3 id="82-corpus-wide-relationships">8.2 Corpus-wide relationships</h3>
 <p>After averaging the three runs for each condition, Raspberry Pi net
 energy ranged from 31.62 to 4,795.94 µJ per inference and ESP32-S3 INT8
-energy ranged from 1,146.82 to 64,347.41 µJ. MAC count had a strong but
+energy ranged from 796.30 to 35,572.68 µJ. MAC count had a strong but
 imperfect association with energy on both platforms. The static
 byte-access proxy was weaker as a standalone predictor, while measured
 invocation latency had the strongest association.</p>
@@ -574,30 +577,30 @@ family-bootstrap confidence interval)</th>
 <td>MAC count</td>
 <td style="text-align: right;">0.912 [0.790, 0.986]</td>
 <td style="text-align: right;">0.914 [0.867, 0.976]</td>
-<td style="text-align: right;">0.804 [0.666, 0.933]</td>
+<td style="text-align: right;">0.782 [0.684, 0.912]</td>
 </tr>
 <tr>
 <td>Static byte-access proxy</td>
 <td style="text-align: right;">0.555 [0.314, 0.849]</td>
 <td style="text-align: right;">0.400 [−0.018, 0.859]</td>
-<td style="text-align: right;">0.449 [0.205, 0.894]</td>
+<td style="text-align: right;">0.600 [0.273, 0.938]</td>
 </tr>
 <tr>
 <td>Activation-output bytes</td>
 <td style="text-align: right;">0.687 [0.246, 0.886]</td>
 <td style="text-align: right;">0.804 [0.505, 0.931]</td>
-<td style="text-align: right;">0.431 [0.127, 0.898]</td>
+<td style="text-align: right;">0.830 [0.461, 0.958]</td>
 </tr>
 <tr>
 <td>Median invocation latency</td>
 <td style="text-align: right;">0.998 [0.997, 0.999]</td>
 <td style="text-align: right;">0.998 [0.994, 0.999]</td>
-<td style="text-align: right;">0.996 [0.992, 0.999]</td>
+<td style="text-align: right;">0.996 [0.991, 0.999]</td>
 </tr>
 </tbody>
 </table>
 <p>On the log10 scale used for the headline cross-platform comparison,
-MAC–energy Pearson <em>r</em> was 0.973 for Raspberry Pi INT8 and 0.820
+MAC–energy Pearson <em>r</em> was 0.973 for Raspberry Pi INT8 and 0.877
 for ESP32-S3 INT8. FLOP results are identical because FLOPs equal
 exactly twice MACs under the declared counting rule; they are therefore
 not presented as an independent predictor.</p>
@@ -611,20 +614,22 @@ alt="INT8 net energy against the static byte-access proxy on both platforms" /><
 proxy on both platforms. The proxy does not measure physical memory
 traffic.</p>
 <p>The task-adjusted baseline model used MAC count, parameter bytes and
-task. It explained 94.7% of the FP32 energy variation and 88.9% of the
-INT8 variation. Replacing parameter bytes with the predeclared static
-byte-access proxy increased those values to 98.9% and 91.1%, respectively.
-In a separate log-scale analysis of the common INT8 models, adding static
-bytes to a MAC-only model increased R² by 0.207 on ESP32-S3 and 0.017 on
-the Raspberry Pi. This indicates complementary structural information,
-not measured physical memory traffic.</p>
+task. On the Raspberry Pi it explained 94.7% of the FP32 energy variation
+and 88.9% of the INT8 variation. Replacing parameter bytes with the
+predeclared static byte-access proxy increased those values to 98.9% and
+91.1%, respectively. On the ESP32-S3, the corresponding replacement
+increased explained variation from 84.9% to 89.6% and reduced RMSE from
+2,694.5 to 2,232.1 µJ. In a separate log-scale analysis of the common
+INT8 models, adding static bytes to a MAC-only model increased R² by
+0.176 on ESP32-S3 and 0.017 on the Raspberry Pi. This indicates
+complementary structural information, not measured physical memory
+traffic.</p>
 
 <h3 id="83-controlled-near-mac-comparisons">8.3 Controlled near-MAC
 comparisons</h3>
-<p>The controlled pairs produced the clearest practical failure of
-arithmetic-only ranking. The depthwise model required more energy on the
-Raspberry Pi but less energy on the ESP32-S3, despite the same frozen
-INT8 artifacts and input order.</p>
+<p>The controlled pairs produced the clearest practical failure of an
+arithmetic-only estimate. The depthwise model required substantially
+more energy on both platforms despite the nearly matched MAC counts.</p>
 <table>
 <caption>Table 5. Cross-platform results for the primary near-MAC pairs.</caption>
 <thead>
@@ -641,37 +646,42 @@ INT8 artifacts and input order.</p>
 <td>CIFAR-10</td>
 <td style="text-align: right;">1.074%</td>
 <td style="text-align: right;">+49.5%</td>
-<td style="text-align: right;">−19.9%</td>
-<td>Reversed</td>
+<td style="text-align: right;">+82.4%</td>
+<td>Depthwise higher on both platforms</td>
 </tr>
 <tr>
 <td>Speech Commands</td>
 <td style="text-align: right;">0.203%</td>
 <td style="text-align: right;">+44.8%</td>
-<td style="text-align: right;">−2.3%</td>
-<td>Reversed to near parity</td>
+<td style="text-align: right;">+88.9%</td>
+<td>Depthwise higher on both platforms</td>
 </tr>
 </tbody>
 </table>
-<p><img src="analysis/figures/primary_pair_platform_reversal.png"
+<p><img src="analysis/figures/primary_pair_platform_comparison.png"
 alt="Cross-platform energy changes for the two primary near-MAC pairs" /></p>
 <p><strong>Figure 10.</strong> Energy changes for the two primary
 near-MAC pairs. Positive values indicate higher depthwise energy.</p>
 <p>The energy direction followed the measured latency direction while
-incremental active power differed by no more than about 5%. Across all
-ten planned near-MAC comparisons, depthwise energy was higher in all ten
-Raspberry Pi INT8 comparisons but in six of ten ESP32-S3 comparisons.
-Because these overlapping pairs reuse models, the wider pattern is
-descriptive rather than ten independent tests.</p>
+incremental active power differed by no more than about 5%. Across the
+nine planned comparisons below 10% MAC difference, depthwise energy was
+higher in all nine Raspberry Pi INT8 comparisons and eight of nine
+ESP32-S3 comparisons. Because these overlapping pairs reuse models, the
+wider pattern is descriptive rather than nine independent tests.</p>
 <p>Each primary pair changes both convolution structure and channel
-width. The experiment therefore establishes platform-dependent model
-ordering but does not identify convolution type as the sole cause.</p>
+width. The experiment therefore establishes that near-equal MAC count
+does not guarantee near-equal energy, but it does not identify
+convolution type as the sole cause.</p>
 
 <h3 id="84-latency-and-precision">8.4 Latency and precision</h3>
 <p><img src="analysis/figures/platform_energy_vs_latency.png"
 alt="INT8 net energy against invocation latency on both platforms" /></p>
 <p><strong>Figure 11.</strong> INT8 energy versus invocation latency on
 both platforms. Lines are log-scale least-squares fits.</p>
+
+<p>Across the 43 common INT8 models, platform energies were strongly
+related but not identical: log-scale Pearson <em>r</em> was 0.931 and
+Spearman rho was 0.941.</p>
 
 <p>Naturally, INT8 required less energy than FP32 for all 43 models. The median
 INT8-to-FP32 energy ratio was 0.672 [0.568, 0.752], equivalent to a
@@ -697,6 +707,19 @@ drew less power than the Raspberry Pi but took much longer to complete an
 inference, so its longer execution time outweighed its power advantage.
 This illustrates why power and energy are not interchangeable: inference
 energy depends on both the power drawn and how long that power is drawn.</p>
+<p>An earlier complete ESP32-S3 campaign used ESP-NN 1.3.1 and produced
+the opposite primary-pair result: depthwise energy was 19.9% and 2.3%
+lower than standard convolution. With the same model artifacts and input
+banks under ESP-NN 1.4.1, depthwise energy was instead 82.4% and 88.9%
+higher. Between the campaigns, standard-model energy fell by 53.8% and
+49.5%, while depthwise-model energy changed by +5.2% and −2.3%.
+Espressif had corrected and enabled an optimized 3 × 3
+standard-convolution path that was disabled in the earlier version
+because of an inline-assembly priming error and a performance regression
+[35]. The model graphs and MAC counts did not change, showing that MACs
+cannot represent runtime-kernel selection. Because the releases contain
+other changes, the comparison does not isolate that commit as the sole
+cause.</p>
 
 <h3 id="92-what-the-experiment-cannot-identify">9.2 What the experiment
 cannot identify</h3>
@@ -705,9 +728,10 @@ rate, processor architecture, flash and PSRAM access, runtime behaviour
 and operator implementation relative to the Raspberry Pi's
 Cortex-A72/XNNPACK path. These factors were not isolated experimentally.
 No hardware-counter measurements were retained to separate cache reuse,
-DRAM, flash or PSRAM transfers, kernel fusion or memory stalls. The study
-therefore establishes that energy behaviour and model ordering differed,
-but it does not assign the difference to any physical mechanism.</p>
+DRAM, flash or PSRAM transfers, kernel fusion or memory stalls. The
+runtime-version comparison shows that kernel selection matters, but the
+experiment does not assign the complete platform difference to one
+physical mechanism.</p>
 <p>The primary near-MAC pairs also change channel width as well as
 convolution structure. They demonstrate a failure of MAC-based model
 ordering, but they do not identify convolution type as the sole cause of
@@ -737,11 +761,11 @@ sample of all edge-AI workloads.</p>
 <h3 id="94-conclusion">9.4 Conclusion</h3>
 <p>Across the 43 common INT8 models, MAC count described broad energy
 scaling on both platforms, but its strength and fine-grained ranking
-were hardware-dependent. The primary near-MAC comparisons reversed
-direction between the Raspberry Pi and ESP32-S3, while the immediate
-energy difference followed execution time rather than a large change in
-incremental power. A model ranking derived from MAC count on one
-platform therefore cannot be assumed to hold on another platform.</p>
+were hardware-dependent. The primary near-MAC pairs had almost identical
+MAC counts but 44.8%–49.5% energy gaps on the Raspberry Pi and
+82.4%–88.9% gaps on the ESP32-S3. The immediate energy difference
+followed execution time rather than a large change in incremental power,
+and its magnitude changed substantially with the platform and runtime.</p>
 <p>Operation counts remain useful arithmetic descriptors and broad
 within-platform predictors. They are not sufficient as
 hardware-independent energy selectors between structurally different
@@ -827,9 +851,6 @@ network architectures for deploying TinyML applications on commodity
 microcontrollers. <em>Proceedings of Machine Learning and
 Systems</em>, 3. <a
 href="https://proceedings.mlsys.org/paper_files/paper/2021/hash/c4d41d9619462c534b7b61d1f772385e-Abstract.html">Official proceedings record</a>.</li>
-<li>Holm, S. (1979). A simple sequentially rejective multiple test
-procedure. <em>Scandinavian Journal of Statistics</em>, 6(2),
-65–70.</li>
 <li>Baller, S. P., Jindal, A., Chadha, M., &amp; Gerndt, M. (2021).
 DeepEdgeBench: Benchmarking deep neural networks on edge devices.
 <em>2021 IEEE International Conference on Cloud Engineering</em>,
@@ -869,11 +890,6 @@ href="https://openaccess.thecvf.com/content/ICCV2023/html/Ancilotto_XiNet_Effici
 An insightful visual performance model for multicore architectures.
 <em>Communications of the ACM</em>, 52(4), 65–76. <a
 href="https://doi.org/10.1145/1498765.1498785">https://doi.org/10.1145/1498765.1498785</a></li>
-<li>Benjamini, Y., &amp; Hochberg, Y. (1995). Controlling the false
-discovery rate: A practical and powerful approach to multiple testing.
-<em>Journal of the Royal Statistical Society: Series B</em>, 57(1),
-289–300. <a
-href="https://doi.org/10.1111/j.2517-6161.1995.tb02031.x">https://doi.org/10.1111/j.2517-6161.1995.tb02031.x</a></li>
 <li>Davison, A. C., &amp; Hinkley, D. V. (1997). <em>Bootstrap methods
 and their application</em>. Cambridge University Press. <a
 href="https://www.cambridge.org/core/books/bootstrap-methods-and-their-application/ED2FD043579F27952363566DC09CBD6A">Publisher record</a>.</li>
@@ -912,6 +928,9 @@ href="https://doi.org/10.23919/WiOpt56218.2022.9930584">https://doi.org/10.23919
 consumption of neural networks with joint structure–device encoding.
 <em>Sustainable Computing: Informatics and Systems</em>, 45, 101062. <a
 href="https://doi.org/10.1016/j.suscom.2024.101062">https://doi.org/10.1016/j.suscom.2024.101062</a></li>
+<li>Espressif Systems. (2026). <em>perf(conv/s3): enable the 3x3 im2col
+path</em> [Git commit]. <a
+href="https://github.com/espressif/esp-nn/commit/0c428a386a9a08b8436827f54cf735c25bc58bf2">Commit 0c428a3</a>.</li>
 </ol>
     </article>
   </main>
